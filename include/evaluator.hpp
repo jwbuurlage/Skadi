@@ -1,3 +1,5 @@
+#pragma once
+
 namespace Skadi {
 
 class Evaluator {
@@ -8,6 +10,6 @@ class Evaluator {
 class PointEvaluator : Evaluator {
   public:
     unsigned int evaluate(const Board& board) override { return 1; }
-}
+};
 
 } // namespace Skadi

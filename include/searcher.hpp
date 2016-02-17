@@ -1,3 +1,5 @@
+#pragma once
+
 namespace Skadi {
 
 class Searcher {
@@ -6,6 +8,6 @@ class Searcher {
 
 class BruteForceSearcher : Searcher {
     public:
-}
+};
 
 } // namespace Skadi

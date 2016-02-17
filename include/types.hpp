@@ -1,7 +1,9 @@
+#pragma once
+
 namespace Skadi {
 
-class enum Color { black, white };
+enum class Color { black, white };
 
-class enum Result { black_win, white_win, draw, stalemate };
+enum class Result { black_win, white_win, draw, stalemate };
 
 } // namespace Skadi
