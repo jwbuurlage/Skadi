@@ -4,7 +4,8 @@
 #include <vector>
 #include <iostream>
 
-#include "../util/logging.hpp"
+#include <jw/logging.hpp>
+
 #include "pieces.hpp"
 
 namespace Skadi {
@@ -30,7 +31,7 @@ class Board {
         }
 
         for (auto row : boardString) {
-            std::cout << row << std::endl;
+            JWLogInfo << row << endLog;
         }
     }
 

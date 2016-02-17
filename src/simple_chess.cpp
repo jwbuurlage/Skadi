@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include <jw.hpp>
 #include <skadi.hpp>
 
 struct Game {
@@ -7,16 +8,11 @@ struct Game {
     char playerColor;
 };
 
-Game startGame() {
+Game startGame(const jw::ArgParse& args) {
     Game game;
-//    std::cout << "depth = ";
-//    std::cin >> game.depth;
-//
-//    std::cout << "color (b/w) = ";
-//    std::cin >> game.playerColor;
 
-    game.depth = 2;
-    game.playerColor = 'w';
+    game.depth = args.as<unsigned int>("--depth");
+    game.playerColor = args.as<char>("--playercolor");
 
     return game;
 }
@@ -46,8 +42,14 @@ Skadi::Result playGame(const Game& game, Engine& engine) {
     return Skadi::Result::draw;
 }
 
-int main() {
-    auto game = startGame();
+int main(int argc, char** argv) {
+    auto args = jw::ArgParse();
+    args.addOptionWithDefault("--depth", "The search depth of the engine", 4);
+    args.addOptionWithDefault("--playercolor",
+                              "The color of the starting player (b/w)", 'w');
+    args.parse(argc, argv);
+
+    auto game = startGame(args);
 
     auto engine =
         Skadi::Engine<Skadi::PointEvaluator, Skadi::BruteForceSearcher>(
