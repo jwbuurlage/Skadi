@@ -11,42 +11,33 @@ namespace Skadi {
 const static std::string rowNames = "abcdefgh";
 const static std::string columnNames = "12345678";
 
-const static std::map<char, Piece> whitePieceForLabel = {
-    { 'r', Rook() },
-    { 'b', Bishop() },
-    { 'n', Knight() },
-    { 'k', King() },
-    { 'q', Queen() },
-    { 'p', Pawn() }
-};
+const static std::map<char, ChessPiece> whitePieceForLabel = {
+    {'r', ChessPiece::rook},   {'b', ChessPiece::bishop},
+    {'n', ChessPiece::knight}, {'k', ChessPiece::king},
+    {'q', ChessPiece::queen},  {'p', ChessPiece::pawn}};
 
-const static std::map<char, Piece> blackPieceForLabel = {
-    { 'R', Rook() },
-    { 'B', Bishop() },
-    { 'N', Knight() },
-    { 'K', King() },
-    { 'Q', Queen() },
-    { 'P', Pawn() }
-};
+const static std::map<char, ChessPiece> blackPieceForLabel = {
+    {'R', ChessPiece::rook},   {'B', ChessPiece::bishop},
+    {'N', ChessPiece::knight}, {'K', ChessPiece::king},
+    {'Q', ChessPiece::queen},  {'P', ChessPiece::pawn}};
 
 void setBoardfromFEN(Board& board, std::string fen) {
     unsigned int pos = 0;
     for (unsigned int row = 0; row < 8; ++row) {
         unsigned int col = 0;
         for (; fen[pos] != '/' && fen[pos] != ' '; ++pos) {
-            std::cout << "fen[pos] = " << fen[pos] << std::endl;
             if ('1' <= fen[pos] && fen[pos] <= '9') {
                 col += fen[pos] - '1';
             } else if (whitePieceForLabel.find(fen[pos]) !=
                        whitePieceForLabel.end()) {
-                auto piece = whitePieceForLabel.at(fen[pos]);
-                piece.setPosition(row, col);
-                board.addPiece(Color::white, piece);
+                board.addPiece(Color::white, whitePieceForLabel.at(fen[pos]),
+                               row, col);
+                col += 1;
             } else if (blackPieceForLabel.find(fen[pos]) !=
                        blackPieceForLabel.end()) {
-                auto piece = blackPieceForLabel.at(fen[pos]);
-                piece.setPosition(row, col);
-                board.addPiece(Color::black, piece);
+                board.addPiece(Color::black, blackPieceForLabel.at(fen[pos]),
+                               row, col);
+                col += 1;
             }
         }
         ++pos;

@@ -30,7 +30,8 @@ std::string requestMove() {
 template <class Engine>
 Skadi::Result playGame(const Game& game, Engine& engine) {
     unsigned int turn = 1;
-    //while (!engine.getBoard().gameOver()) {
+    while (!engine.getBoard().gameOver()) {
+        engine.getBoard().show_();
         if (turn % 2 == 1) {
             (game.playerColor == 'w') ? engine.hisMove(requestMove())
                                       : engine.yourMove();
@@ -40,7 +41,7 @@ Skadi::Result playGame(const Game& game, Engine& engine) {
         }
         engine.getBoard().show_();
         ++turn;
-    //}
+    }
 
     return Skadi::Result::draw;
 }

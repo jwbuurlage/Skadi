@@ -11,46 +11,36 @@ namespace Skadi {
 
 class Board {
   public:
-      void show_() const {
-          std::array<std::string, 8> boardString{
-              "-+-+-+-+",
-              "+-+-+-+-",
-              "-+-+-+-+",
-              "+-+-+-+-",
-              "-+-+-+-+",
-              "+-+-+-+-",
-              "-+-+-+-+",
-              "+-+-+-+-"
-          };
+    void show_() const {
+        std::cout << "Current position: " << std::endl;
+        std::array<std::string, 8> boardString{
+            "-+-+-+-+", "+-+-+-+-", "-+-+-+-+", "+-+-+-+-",
+            "-+-+-+-+", "+-+-+-+-", "-+-+-+-+", "+-+-+-+-"};
 
-          for (auto& p : whitePieces_) {
-              LogVar(p->getRow());
-              LogVar(p->getColumn());
-              LogVar(p->getLabel());
-              boardString[p->getRow()][p->getColumn()] = p->getLabel();
-          }
+        for (auto& p : whitePieces_) {
+            boardString[size_ - 1 - p->getRow()][p->getColumn()] =
+                p->getLabel();
+        }
 
-          auto toUpper = [](char c) { return c - 'a' + 'A'; };
+        auto toUpper = [](char c) { return c - 'a' + 'A'; };
 
-          for (auto& p : whitePieces_) {
-              boardString[p->getRow()][p->getColumn()] = toUpper(p->getLabel());
-          }
+        for (auto& p : blackPieces_) {
+            boardString[size_ - 1 - p->getRow()][p->getColumn()] =
+                toUpper(p->getLabel());
+        }
 
-          for (auto row : boardString) {
-              std::cout << row << std::endl;
-          }
-      }
+        for (auto row : boardString) {
+            std::cout << row << std::endl;
+        }
+    }
 
-      template <class TPiece>
-      void addPiece(Color color, TPiece piece) {
-          if (color == Color::white) {
-              whitePieces_.push_back(std::make_unique<TPiece>(piece));
-          } else {
-              blackPieces_.push_back(std::make_unique<TPiece>(piece));
-          }
-      }
+    void addPiece(Color color, ChessPiece piece, unsigned int row,
+                  unsigned int col) {
+        auto& pieces = (color == Color::white) ? whitePieces_ : blackPieces_;
+        pieces.push_back(std::move(createPiece(piece, row, col)));
+    }
 
-      bool gameOver() const { return false; }
+    bool gameOver() const { return false; }
 
   private:
     static const unsigned int size_ = 8;
