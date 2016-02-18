@@ -20,7 +20,6 @@ class Engine {
     void hisMove(std::string move) {}
 
     void yourMove() {
-
     }
 
   private:

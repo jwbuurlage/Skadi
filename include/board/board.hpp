@@ -14,7 +14,7 @@ class Board {
   public:
     void show_() const {
         std::cout << "Current position: " << std::endl;
-        std::array<std::string, 8> boardString{
+        std::array<std::string, size_> boardString{
             "-+-+-+-+", "+-+-+-+-", "-+-+-+-+", "+-+-+-+-",
             "-+-+-+-+", "+-+-+-+-", "-+-+-+-+", "+-+-+-+-"};
 
@@ -44,7 +44,7 @@ class Board {
     bool gameOver() const { return false; }
 
   private:
-    static const unsigned int size_ = 8;
+    static constexpr unsigned int size_ = 8;
     std::vector<std::unique_ptr<Piece>> whitePieces_;
     std::vector<std::unique_ptr<Piece>> blackPieces_;
 };
