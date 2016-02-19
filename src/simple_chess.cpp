@@ -47,7 +47,8 @@ int main(int argc, char** argv) {
     args.addOptionWithDefault("--depth", "The search depth of the engine", 4);
     args.addOptionWithDefault("--playercolor",
                               "The color of the starting player (b/w)", 'w');
-    args.parse(argc, argv);
+    if(!args.parse(argc, argv))
+        return -1;
 
     auto game = startGame(args);
 
