@@ -5,6 +5,7 @@
 
 #include <board/pieces.hpp>
 #include <board/board.hpp>
+#include <board/moves.hpp>
 
 namespace Skadi {
 
@@ -44,12 +45,11 @@ void setBoardfromFEN(Board& board, std::string fen) {
     }
 }
 
-std::string boardToFEN(Board& board) {
-    return "";
-}
+std::string boardToFEN(Board& board) { return ""; }
 
-void apply(Board& board, std::string move) {
-
+Move generateMove(Board& board, std::string move) {
+    // interpret PGN notation and make move
+    return Move(nullptr, nullptr, nullptr);
 }
 
 } // namespace Skadi

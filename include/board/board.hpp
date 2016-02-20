@@ -10,6 +10,12 @@
 
 namespace Skadi {
 
+struct Square {
+    int row;
+    int col;
+    Piece* piece;
+};
+
 class Board {
   public:
     void show_() const {
@@ -45,6 +51,7 @@ class Board {
 
   private:
     static constexpr unsigned int size_ = 8;
+    std::array<std::array<Square, size_>, size_> squares_;
     std::vector<std::unique_ptr<Piece>> whitePieces_;
     std::vector<std::unique_ptr<Piece>> blackPieces_;
 };
