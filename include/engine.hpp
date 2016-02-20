@@ -17,10 +17,9 @@ class Engine {
 
     const Board& getBoard() const { return board_; }
 
-    void hisMove(std::string move) {}
+    void forcedMove(std::string move) {}
 
-    void yourMove() {
-    }
+    void makeMove() {}
 
   private:
     unsigned int depth_;

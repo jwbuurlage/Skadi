@@ -4,15 +4,17 @@
 #include <skadi.hpp>
 
 struct Game {
-    unsigned int depth;
-    char playerColor;
+    int depth;
+    char whitePlayer;
+    char blackPlayer;
 };
 
 Game startGame(const jw::ArgParse& args) {
     Game game;
 
-    game.depth = args.as<unsigned int>("--depth");
-    game.playerColor = args.as<char>("--playercolor");
+    game.depth = args.as<int>("--depth");
+    game.whitePlayer = args.as<char>("--white");
+    game.blackPlayer = args.as<char>("--black");
 
     return game;
 }
@@ -25,17 +27,19 @@ std::string requestMove() {
 
 template <class Engine>
 Skadi::Result playGame(const Game& game, Engine& engine) {
-    unsigned int turn = 1;
+    int turn = 1;
     while (!engine.getBoard().gameOver()) {
-        engine.getBoard().show_();
         if (turn % 2 == 1) {
-            (game.playerColor == 'w') ? engine.hisMove(requestMove())
-                                      : engine.yourMove();
+            engine.getBoard().show_();
+            std::cout << turn / 2 + 1 << "w. ";
+            (game.whitePlayer == 'h') ? engine.forcedMove(requestMove())
+                                      : engine.makeMove();
         } else {
-            (game.playerColor == 'b') ? engine.hisMove(requestMove())
-                                      : engine.yourMove();
+            engine.getBoard().show_();
+            std::cout << turn / 2 << "b. ";
+            (game.blackPlayer == 'h') ? engine.forcedMove(requestMove())
+                                      : engine.makeMove();
         }
-        engine.getBoard().show_();
         ++turn;
     }
 
@@ -45,8 +49,10 @@ Skadi::Result playGame(const Game& game, Engine& engine) {
 int main(int argc, char** argv) {
     auto args = jw::ArgParse();
     args.addOptionWithDefault("--depth", "The search depth of the engine", 4);
-    args.addOptionWithDefault("--playercolor",
-                              "The color of the starting player (b/w)", 'w');
+    args.addOptionWithDefault("--white",
+                              "Human or computer (h/c)", 'h');
+    args.addOptionWithDefault("--black",
+                              "Human or computer (h/c)", 'c');
     if(!args.parse(argc, argv))
         return -1;
 
@@ -54,7 +60,7 @@ int main(int argc, char** argv) {
 
     auto engine =
         Skadi::Engine<Skadi::PointEvaluator, Skadi::BruteForceSearcher>(
-            game.depth, (game.playerColor == 'w' ? Skadi::Color::black
+            game.depth, (game.whitePlayer == 'h' ? Skadi::Color::black
                                                  : Skadi::Color::white));
 
     auto result = playGame(game, engine);
