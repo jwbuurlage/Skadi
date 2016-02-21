@@ -6,102 +6,134 @@
 
 namespace Skadi {
 
-enum class ChessPiece { pawn, rook, knight, bishop, queen, king };
+enum class ChessPiece { pawn, rook, knight, bishop, queen, king, none };
+
+class Board;
 
 class Piece {
   public:
-    void setPosition(unsigned int row, unsigned int col) {
+    Piece(Board* board, int row, int col, Color color)
+        : board_(board), row_(row), column_(col), color_(color) {}
+
+    void setPosition(int row, int col) {
         row_ = row;
         column_ = col;
     }
 
-    unsigned int getRow() const { return row_; }
-    unsigned int getColumn() const { return column_; }
+    int getRow() const { return row_; }
+    int getColumn() const { return column_; }
 
-    virtual std::vector<std::string> moves() {
-        return std::vector<std::string>();
+    virtual std::vector<Square*> targets() {
+        return std::vector<Square*>();
     }
 
-    virtual void move(std::string square) {}
+    virtual ChessPiece getType() const { return ChessPiece::none; }
 
-    virtual char getLabel() const { return '?'; }
+    virtual bool canTarget(int row, int col) {
+        for (auto square : targets()) {
+            if (square->row == row && square->column == col)
+                return true;
+        }
+        return false;
+    }
 
   protected:
-    Piece(unsigned int row, unsigned int col) {
-        row_ = row;
-        column_ = col;
-    }
+    int row_;
+    int column_;
 
-    unsigned int row_;
-    unsigned int column_;
+    Color color_;
+    Board* board_;
 };
 
 class Pawn : public Piece {
   public:
-    Pawn(unsigned int row, unsigned int col) : Piece(row, col) {}
-    char getLabel() const override { return 'p'; }
+    using Piece::Piece;
+    ChessPiece getType() const override { return ChessPiece::pawn; }
+
+    std::vector<Square*> targets() override {
+        std::vector<Square*> targets;
+        // can move forward
+        auto targetRow = (color_ == Color::white) ? row_ + 1 : row_ - 1;
+        if (column_ > 0) {
+            auto leftSquare = board_->getSquare(targetRow, column_ - 1);
+            if (leftSquare->piece != nullptr) {
+                targets.push_back(leftSquare);
+            }
+        }
+        if (column_ < board->getSize() - 1) {
+            auto rightSquare = board_->getSquare(targetRow, column_ + 1);
+            if (rightSquare->piece != nullptr) {
+                targets.push_back(rightSquare);
+            }
+        }
+        auto forwardSquare = board_->getSquare(targetRow, column_);
+        if (forwardSquare->piece == nullptr) {
+            targets.push_back(forwardSquare);
+        }
+
+        return targets;
+    }
 };
 
 class Rook : public Piece {
   public:
-    Rook(unsigned int row, unsigned int col) : Piece(row, col) {}
-    char getLabel() const override { return 'r'; }
+    using Piece::Piece;
+    ChessPiece getType() const override { return ChessPiece::rook; }
 };
 
 class Knight : public Piece {
   public:
-    Knight(unsigned int row, unsigned int col) : Piece(row, col) {}
-    char getLabel() const override { return 'n'; }
+    using Piece::Piece;
+    ChessPiece getType() const override { return ChessPiece::knight; }
 };
 
 class Bishop : public Piece {
   public:
-    Bishop(unsigned int row, unsigned int col) : Piece(row, col) {}
-    char getLabel() const override { return 'b'; }
-};
-
-class King : public Piece {
-  public:
-    King(unsigned int row, unsigned int col) : Piece(row, col) {}
-    char getLabel() const override { return 'k'; }
+    using Piece::Piece;
+    ChessPiece getType() const override { return ChessPiece::bishop; }
 };
 
 class Queen : public Piece {
   public:
-    Queen(unsigned int row, unsigned int col) : Piece(row, col) {}
-    char getLabel() const override { return 'q'; }
+    using Piece::Piece;
+    ChessPiece getType() const override { return ChessPiece::queen; }
 };
 
+class King : public Piece {
+  public:
+    using Piece::Piece;
+    ChessPiece getType() const override { return ChessPiece::king; }
+};
 
-std::unique_ptr<Piece> createPiece(ChessPiece piece, unsigned int row,
-                                   unsigned int col) {
+std::unique_ptr<Piece> createPiece(Board* board, ChessPiece piece, int row, int col,
+                                   Color color) {
     switch (piece) {
     case ChessPiece::pawn:
-        return std::move(std::make_unique<Pawn>(row, col));
+        return std::move(std::make_unique<Pawn>(board, row, col, color));
         break;
 
     case ChessPiece::rook:
-        return std::move(std::make_unique<Rook>(row, col));
+        return std::move(std::make_unique<Rook>(board, row, col, color));
         break;
 
     case ChessPiece::knight:
-        return std::move(std::make_unique<Knight>(row, col));
+        return std::move(std::make_unique<Knight>(board, row, col, color));
         break;
 
     case ChessPiece::bishop:
-        return std::move(std::make_unique<Bishop>(row, col));
+        return std::move(std::make_unique<Bishop>(board, row, col, color));
         break;
 
     case ChessPiece::queen:
-        return std::move(std::make_unique<Queen>(row, col));
+        return std::move(std::make_unique<Queen>(board, row, col, color));
         break;
 
     case ChessPiece::king:
-        return std::move(std::make_unique<King>(row, col));
+        return std::move(std::make_unique<King>(board, row, col, color));
         break;
 
     default:
-        return std::move(std::make_unique<Pawn>(row, col));
+        return std::move(std::make_unique<Pawn>(board, row, col, color));
         break;
     }
 }

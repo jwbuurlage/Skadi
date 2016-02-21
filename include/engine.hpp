@@ -17,7 +17,10 @@ class Engine {
 
     const Board& getBoard() const { return board_; }
 
-    void forcedMove(std::string move) {}
+    void forcedMove(std::string moveString) {
+        auto move = generateMove(board_, moveString);
+        move.make();
+    }
 
     void makeMove() {}
 
