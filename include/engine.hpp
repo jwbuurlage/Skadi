@@ -2,7 +2,7 @@
 
 #include "types.hpp"
 #include "util/notation.hpp"
-#include "board/board.hpp"
+#include "game/game.hpp"
 
 namespace Skadi {
 
@@ -10,15 +10,14 @@ template <class Evaluator, class Searcher>
 class Engine {
   public:
     Engine(int depth, Color color) : depth_(depth), color_(color) {
-        setBoardfromFEN(
-            this->board_,
-            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        setBoardfromFEN(game_, getBoard(), "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     }
 
-    const Board& getBoard() const { return board_; }
+    Board& getBoard() { return game_.getBoard(); }
+    const Board& getBoard() const { return game_.getBoard(); }
 
     void forcedMove(std::string moveString) {
-        auto move = generateMove(board_, moveString, colorToMove(), move_);
+        auto move = generateMove(game_, moveString, colorToMove(), move_);
         move.make();
         nextMove();
     }
@@ -39,7 +38,7 @@ class Engine {
   private:
     int depth_;
     Color color_;
-    Board board_;
+    Game game_;
 
     // every player makes two moves each turn
     int move_ = 1;

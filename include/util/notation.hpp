@@ -3,9 +3,10 @@
 #include <string>
 #include <map>
 
-#include "board/pieces.hpp"
-#include "board/board.hpp"
-#include "board/moves.hpp"
+#include "game/pieces.hpp"
+#include "game/game.hpp"
+#include "game/board.hpp"
+#include "game/moves.hpp"
 
 #include "util/logging.hpp"
 
@@ -13,8 +14,7 @@
 
 namespace Skadi {
 
-
-void setBoardfromFEN(Board& board, std::string fen) {
+void setBoardfromFEN(Game& game, Board& board, std::string fen) {
     const static std::map<char, ChessPiece> whitePieceForLabel = {
         {'r', ChessPiece::rook},   {'b', ChessPiece::bishop},
         {'n', ChessPiece::knight}, {'k', ChessPiece::king},
@@ -33,15 +33,15 @@ void setBoardfromFEN(Board& board, std::string fen) {
                 col += fen[pos] - '1';
             } else if (whitePieceForLabel.find(fen[pos]) !=
                        whitePieceForLabel.end()) {
-                board.addPiece(std::move(
-                    createPiece(&board, whitePieceForLabel.at(fen[pos]), row,
-                                col, Color::white)));
+                board.addPiece(
+                    createPiece(&game, &board, whitePieceForLabel.at(fen[pos]), row,
+                                col, Color::white));
                 col += 1;
             } else if (blackPieceForLabel.find(fen[pos]) !=
                        blackPieceForLabel.end()) {
-                board.addPiece(std::move(
-                    createPiece(&board, blackPieceForLabel.at(fen[pos]), row,
-                                col, Color::black)));
+                board.addPiece(
+                    createPiece(&game, &board, blackPieceForLabel.at(fen[pos]), row,
+                                col, Color::black));
                 col += 1;
             }
         }
@@ -54,10 +54,12 @@ std::string boardToFEN(Board& board) {
     return "";
 }
 
-Move generateMove(Board& board, std::string move, Color byColor, int moveNumber) {
+Move generateMove(Game& game, std::string move, Color byColor, int moveNumber) {
+    Board& board = game.getBoard();
+
     if (move.size() < 2) {
         JWLogError << "Invalid move submitted" << endLog;
-        return Move(nullptr, nullptr, nullptr, -1);
+        return NullMove();
     }
 
     // FIXME make an effort to see if the move is not ill-formed to start with
@@ -139,7 +141,7 @@ Move generateMove(Board& board, std::string move, Color byColor, int moveNumber)
     }
 
     Piece* boardPiece = nullptr;
-    for (auto& piece : board.getPieces())  {
+    for (auto piece : game.getActivePieces()) {
         // does it have the correct type?
         if (piece->getType() != pieceToMove)
             continue;
@@ -150,7 +152,7 @@ Move generateMove(Board& board, std::string move, Color byColor, int moveNumber)
 
         // can it reach the target square?
         if (piece->canTarget(targetSquare->row, targetSquare->column)) {
-            boardPiece = piece.get();
+            boardPiece = piece;
         }
 
         // does it have the correct credentials?
@@ -162,7 +164,7 @@ Move generateMove(Board& board, std::string move, Color byColor, int moveNumber)
                    << endLog;
     }
 
-    return Move(&board, boardPiece, targetSquare, moveNumber);
+    return Move(&game, &board, boardPiece, targetSquare, moveNumber);
 }
 
 } // namespace Skadi

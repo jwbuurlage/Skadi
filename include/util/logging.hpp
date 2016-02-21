@@ -3,8 +3,8 @@
 namespace Skadi {
 
 #include <jw/logging.hpp>
-#include "../board/pieces.hpp"
-#include "../board/board.hpp"
+#include "../game/pieces.hpp"
+#include "../game/board.hpp"
 #include "../types.hpp"
 
 const static std::map<ChessPiece, char> labelForPiece = {

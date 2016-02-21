@@ -4,9 +4,10 @@
 
 #include <util/notation.hpp>
 
-#include <board/pieces.hpp>
-#include <board/board.hpp>
-#include <board/moves.hpp>
+#include <game/game.hpp>
+#include <game/pieces.hpp>
+#include <game/board.hpp>
+#include <game/moves.hpp>
 
 #include <evaluator.hpp>
 #include <searcher.hpp>

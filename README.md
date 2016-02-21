@@ -18,7 +18,7 @@ Are supplied as submodules within the git repository.
 
 - [ ] **Can be used to play chess against another human**
   - [x] Basic movement of chess pieces
-  - [ ] Capturing
+  - [x] Capturing
   - [ ] Special moves (en-passent, castling, promotion)
   - [ ] Understands check / checkmate
 - [ ] **Can be used to play chess against a simple AI**

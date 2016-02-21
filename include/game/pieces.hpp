@@ -9,11 +9,19 @@
 namespace Skadi {
 
 class Board;
+class Game;
+
+class PieceObserver {
+  public:
+    virtual void activate(Piece* piece) = 0;
+    virtual void deactivate(Piece* piece) = 0;
+};
 
 class Piece {
   public:
-    Piece(Board* board, int row, int col, Color color)
-        : board_(board), row_(row), column_(col), color_(color) {
+    Piece(PieceObserver* game, Board* board, int row, int col, Color color)
+        : game_(game), board_(board), row_(row), column_(col), color_(color) {
+        game_->activate(this);
         board_->getSquare(row_, column_)->piece = this;
     }
 
@@ -47,15 +55,23 @@ class Piece {
 
     Color getColor() const { return color_; }
 
+    void capture() {
+        game_->deactivate(this);
+        row_ = -1;
+        column_ = 1;
+        captured_ = true;
+    }
+
   protected:
+    PieceObserver* game_;
     Board* board_;
 
     int row_;
     int column_;
+    Color color_;
 
     int lastMoved_ = 0;
-
-    Color color_;
+    bool captured_ = false;
 
     // FIXME rmeove board and piece
     void squaresForDirection(std::vector<int> di, std::vector<int> dj,
@@ -207,35 +223,35 @@ class King : public Piece {
     }
 };
 
-std::unique_ptr<Piece> createPiece(Board* board, ChessPiece piece, int row,
-                                   int col, Color color) {
+std::unique_ptr<Piece> createPiece(Game* game, Board* board, ChessPiece piece,
+                                   int row, int col, Color color) {
     switch (piece) {
     case ChessPiece::pawn:
-        return std::move(std::make_unique<Pawn>(board, row, col, color));
+        return std::make_unique<Pawn>(game, board, row, col, color);
         break;
 
     case ChessPiece::rook:
-        return std::move(std::make_unique<Rook>(board, row, col, color));
+        return std::make_unique<Rook>(game, board, row, col, color);
         break;
 
     case ChessPiece::knight:
-        return std::move(std::make_unique<Knight>(board, row, col, color));
+        return std::make_unique<Knight>(game, board, row, col, color);
         break;
 
     case ChessPiece::bishop:
-        return std::move(std::make_unique<Bishop>(board, row, col, color));
+        return std::make_unique<Bishop>(game, board, row, col, color);
         break;
 
     case ChessPiece::queen:
-        return std::move(std::make_unique<Queen>(board, row, col, color));
+        return std::make_unique<Queen>(game, board, row, col, color);
         break;
 
     case ChessPiece::king:
-        return std::move(std::make_unique<King>(board, row, col, color));
+        return std::make_unique<King>(game, board, row, col, color);
         break;
 
     default:
-        return std::move(std::make_unique<Pawn>(board, row, col, color));
+        return std::make_unique<Pawn>(game, board, row, col, color);
         break;
     }
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "board/board.hpp"
+#include "game/board.hpp"
 
 namespace Skadi {
 
