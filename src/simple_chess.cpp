@@ -30,15 +30,21 @@ Skadi::Result playGame(const Game& game, Engine& engine) {
     int turn = 1;
     while (!engine.getBoard().gameOver()) {
         if (turn % 2 == 1) {
-            engine.getBoard().show_();
-            std::cout << turn / 2 + 1 << "w. ";
-            (game.whitePlayer == 'h') ? engine.forcedMove(requestMove())
-                                      : engine.makeMove();
+            if (game.whitePlayer == 'h')  {
+                JWLogInfo << engine.getBoard();
+                std::cout << turn / 2 + 1 << "w. ";
+                engine.forcedMove(requestMove());
+            } else {
+              engine.makeMove();
+            }
         } else {
-            engine.getBoard().show_();
-            std::cout << turn / 2 << "b. ";
-            (game.blackPlayer == 'h') ? engine.forcedMove(requestMove())
-                                      : engine.makeMove();
+            if (game.blackPlayer == 'h')  {
+                JWLogInfo << engine.getBoard();
+                std::cout << turn / 2 + 1 << "b. ";
+                engine.forcedMove(requestMove());
+            } else {
+              engine.makeMove();
+            }
         }
         ++turn;
     }

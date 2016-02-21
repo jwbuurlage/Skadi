@@ -1,2 +1,5 @@
 bin/*
 docs/*
+.ycm*
+.color_coded
+*.swp

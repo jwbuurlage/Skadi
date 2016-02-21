@@ -1,5 +1,7 @@
 #pragma once
 
+#include "board/board.hpp"
+
 namespace Skadi {
 
 class Evaluator {

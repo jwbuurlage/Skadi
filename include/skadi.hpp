@@ -13,3 +13,4 @@
 
 #include <engine.hpp>
 
+#include <util/logging.hpp>
