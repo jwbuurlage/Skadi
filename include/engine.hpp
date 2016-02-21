@@ -9,7 +9,7 @@ namespace Skadi {
 template <class Evaluator, class Searcher>
 class Engine {
   public:
-    Engine(unsigned int depth, Color color) : depth_(depth), color_(color) {
+    Engine(int depth, Color color) : depth_(depth), color_(color) {
         setBoardfromFEN(
             this->board_,
             "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
@@ -18,28 +18,45 @@ class Engine {
     const Board& getBoard() const { return board_; }
 
     void forcedMove(std::string moveString) {
-        auto move = generateMove(board_, moveString);
+        auto move = generateMove(board_, moveString, colorToMove(), move_);
         move.make();
+        nextMove();
     }
 
-    void makeMove() {}
+    Color colorToMove() const {
+        return (move_ % 2 == 1) ? Color::white : Color::black;
+    }
+
+    void makeMove() {
+        nextMove();
+    }
+
+    void nextMove() {
+        ++move_;
+        turn_ = (move_ - 1) / 2 + 1;
+    }
 
   private:
-    unsigned int depth_;
+    int depth_;
     Color color_;
     Board board_;
 
-    unsigned int move_;
+    // every player makes two moves each turn
+    int move_ = 1;
+
+    // a turn consists of two moves
+    int turn_ = 1;
+
     bool whiteToMove_;
 
-    struct CastlingRight {
+    struct CastlingRights {
         bool whiteQueenSide = true;
         bool whiteKingSide = true;
         bool blackQueenSide = true;
         bool blackKingSide = true;
     };
 
-    CastlingRight castlingRight_;
+    CastlingRights castlingRights_;
 
     Evaluator evaluator;
     Searcher searcher;
