@@ -11,10 +11,10 @@
 namespace Skadi {
 
 struct CastlingRights {
-    bool whiteQueenSide = true;
-    bool whiteKingSide = true;
-    bool blackQueenSide = true;
-    bool blackKingSide = true;
+    bool whiteQueenSide = false;
+    bool whiteKingSide = false;
+    bool blackQueenSide = false;
+    bool blackKingSide = false;
 };
 
 class Game : public PieceObserver {
@@ -76,7 +76,6 @@ class Game : public PieceObserver {
     int fiftyMoves_ = 0;
 
     Square* enPassentSquare = nullptr;
-
 
     CastlingRights castlingRights_;
 };

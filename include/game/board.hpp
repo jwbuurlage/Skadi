@@ -29,6 +29,10 @@ class Board {
     bool gameOver() const { return false; }
 
     Square* getSquare(int row, int col) { return &squares_[row][col]; }
+    Square* getSquare(std::string description) {
+        return getSquare(rowNames.find(description[1]),
+                         columnNames.find(description[0]));
+    }
 
     const std::vector<std::unique_ptr<Piece>>& getPieces() const {
         return pieces_;

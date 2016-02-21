@@ -49,12 +49,11 @@ void setBoardfromFEN(Game& game, Board& board, std::string fen) {
         ++pos;
     }
 
-    JWLogVar(fen.substr(pos));
     Color activeColor = (fen[pos] == 'w') ? Color::white : Color::black;
     pos += 2;
 
     // either - or KQkq
-    auto castlingRights = game.getCastlingRights();
+    auto& castlingRights = game.getCastlingRights();
     while (fen[pos] != ' ') {
         switch (fen[pos]) {
         case '-':
@@ -69,7 +68,7 @@ void setBoardfromFEN(Game& game, Board& board, std::string fen) {
             castlingRights.blackKingSide = true;
             break;
         case 'q':
-            castlingRights.blackKingSide = true;
+            castlingRights.blackQueenSide = true;
             break;
         }
         ++pos;
@@ -91,18 +90,15 @@ void setBoardfromFEN(Game& game, Board& board, std::string fen) {
 
     // half moves since pawn move or capture
     int halfMovesRule = 0;
-    JWLogVar(halfMovesRule);
     ss >> halfMovesRule;
     game.resetFiftyMoves(halfMovesRule);
 
     // moves
     int moves = 0;
     ss >> moves;
-    JWLogVar(moves);
     game.setMove(moves);
     int halfMoves = (activeColor == Color::white) ? (moves - 1) * 2 + 1
                                                  : moves * 2;
-    JWLogVar(halfMoves);
     game.setHalfMove(halfMoves);
 }
 

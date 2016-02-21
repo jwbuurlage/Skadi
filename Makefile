@@ -1,4 +1,4 @@
-INCLUDE_DIRS = -I include -I ext/*/include
+INCLUDE_DIRS = -I include -I ext/jwutil/include
 FLAGS = -Wall -std=c++14 -g
 
 all: dir bin/simple_chess

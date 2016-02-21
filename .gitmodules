@@ -1,3 +1,6 @@
 [submodule "jwutil"]
 	path = ext/jwutil
 	url = git@github.com:jwbuurlage/JWUtil.git
+[submodule "catch"]
+	path = ext/catch
+	url = git@github.com:philsquared/Catch.git

@@ -65,7 +65,8 @@ class EnPassentMove : public Move {
 };
 
 class CastlingMove : public Move {
-    CastlingMove(bool castleShort, Game* game, Board* board, int moveNumber) {}
+    CastlingMove(bool castleShort, Game* game, Board* board, int moveNumber)
+        : Move(game, board, nullptr, nullptr, moveNumber) {}
 };
 
 } // namespace Skadi
