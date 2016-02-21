@@ -1,5 +1,5 @@
 # SkadiRights
-A simple chess engine writte in modern C++.
+A simple chess engine written in modern C++.
 
 Skadi comes with a basic interface which can be played to play games against the engine, let the engine play a game against itself, or play against another human player. This can be built and run by issuing:
 ```
