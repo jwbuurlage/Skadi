@@ -21,10 +21,12 @@ jw::Logger& operator<<(jw::Logger& logger, const Board& board) {
     auto toUpper = [](char c) { return c - 'a' + 'A'; };
 
     for (auto& p : board.getPieces()) {
+        if (p->isCaptured())
+            continue;
         boardString[board.getSize() - 1 - p->getRow()][p->getColumn()] =
             (p->getColor() == Color::white)
-                ? labelForPiece.at(p->getType())
-                : toUpper(labelForPiece.at(p->getType()));
+                ? toUpper(labelForPiece.at(p->getType()))
+                : labelForPiece.at(p->getType());
     }
 
     logger << "\n";

@@ -62,6 +62,8 @@ class Piece {
         captured_ = true;
     }
 
+    bool isCaptured() const { return captured_; }
+
   protected:
     PieceObserver* game_;
     Board* board_;

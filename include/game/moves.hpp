@@ -29,17 +29,28 @@ class Move {
             game_->deactivate(target_->piece);
             target_->piece->capture();
             target_->piece = nullptr;
+
+            // FIXME: save for unmake
+            game_->resetFiftyMoves();
         }
+
         piece_->move(target_->row, target_->column, moveNumber_);
+        if (piece_->getType() == ChessPiece::pawn) {
+            // FIXME: save for unmake
+            game_->resetFiftyMoves();
+        }
     }
 
-    void unmake(){};
+    void unmake() {
+        // undo everything
+    }
 
   protected:
     Game* game_;
     Board* board_;
     Piece* piece_;
     Square* target_;
+
     int moveNumber_;
 };
 
@@ -54,7 +65,7 @@ class EnPassentMove : public Move {
 };
 
 class CastlingMove : public Move {
-
+    CastlingMove(bool castleShort, Game* game, Board* board, int moveNumber) {}
 };
 
 } // namespace Skadi

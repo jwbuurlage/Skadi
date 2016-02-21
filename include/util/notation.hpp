@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <sstream>
 #include <map>
 
 #include "game/pieces.hpp"
@@ -16,41 +17,97 @@ namespace Skadi {
 
 void setBoardfromFEN(Game& game, Board& board, std::string fen) {
     const static std::map<char, ChessPiece> whitePieceForLabel = {
-        {'r', ChessPiece::rook},   {'b', ChessPiece::bishop},
-        {'n', ChessPiece::knight}, {'k', ChessPiece::king},
-        {'q', ChessPiece::queen},  {'p', ChessPiece::pawn}};
-
-    const static std::map<char, ChessPiece> blackPieceForLabel = {
         {'R', ChessPiece::rook},   {'B', ChessPiece::bishop},
         {'N', ChessPiece::knight}, {'K', ChessPiece::king},
         {'Q', ChessPiece::queen},  {'P', ChessPiece::pawn}};
 
-    unsigned int pos = 0;
-    for (unsigned int row = 0; row < 8; ++row) {
-        unsigned int col = 0;
+    const static std::map<char, ChessPiece> blackPieceForLabel = {
+        {'r', ChessPiece::rook},   {'b', ChessPiece::bishop},
+        {'n', ChessPiece::knight}, {'k', ChessPiece::king},
+        {'q', ChessPiece::queen},  {'p', ChessPiece::pawn}};
+
+    int pos = 0;
+    for (int row = 7; row >= 0; --row) {
+        int col = 0;
         for (; fen[pos] != '/' && fen[pos] != ' '; ++pos) {
             if ('1' <= fen[pos] && fen[pos] <= '9') {
                 col += fen[pos] - '1';
             } else if (whitePieceForLabel.find(fen[pos]) !=
                        whitePieceForLabel.end()) {
-                board.addPiece(
-                    createPiece(&game, &board, whitePieceForLabel.at(fen[pos]), row,
-                                col, Color::white));
+                board.addPiece(createPiece(&game, &board,
+                                           whitePieceForLabel.at(fen[pos]), row,
+                                           col, Color::white));
                 col += 1;
             } else if (blackPieceForLabel.find(fen[pos]) !=
                        blackPieceForLabel.end()) {
-                board.addPiece(
-                    createPiece(&game, &board, blackPieceForLabel.at(fen[pos]), row,
-                                col, Color::black));
+                board.addPiece(createPiece(&game, &board,
+                                           blackPieceForLabel.at(fen[pos]), row,
+                                           col, Color::black));
                 col += 1;
             }
         }
         ++pos;
     }
+
+    JWLogVar(fen.substr(pos));
+    Color activeColor = (fen[pos] == 'w') ? Color::white : Color::black;
+    pos += 2;
+
+    // either - or KQkq
+    auto castlingRights = game.getCastlingRights();
+    while (fen[pos] != ' ') {
+        switch (fen[pos]) {
+        case '-':
+            break;
+        case 'K':
+            castlingRights.whiteKingSide = true;
+            break;
+        case 'Q':
+            castlingRights.whiteQueenSide = true;
+            break;
+        case 'k':
+            castlingRights.blackKingSide = true;
+            break;
+        case 'q':
+            castlingRights.blackKingSide = true;
+            break;
+        }
+        ++pos;
+    }
+    ++pos;
+
+    // either - or square for en passent
+    if (fen[pos] != '-') {
+        auto squareAsString = fen.substr(pos, 2);
+        auto square = board.getSquare(rowNames.find(squareAsString[1]),
+                                      columnNames.find(squareAsString[0]));
+        game.setEnPassentSquare(square);
+        pos += 3;
+    } else {
+        pos += 2;
+    }
+
+    std::stringstream ss(fen.substr(pos));
+
+    // half moves since pawn move or capture
+    int halfMovesRule = 0;
+    JWLogVar(halfMovesRule);
+    ss >> halfMovesRule;
+    game.resetFiftyMoves(halfMovesRule);
+
+    // moves
+    int moves = 0;
+    ss >> moves;
+    JWLogVar(moves);
+    game.setMove(moves);
+    int halfMoves = (activeColor == Color::white) ? (moves - 1) * 2 + 1
+                                                 : moves * 2;
+    JWLogVar(halfMoves);
+    game.setHalfMove(halfMoves);
 }
 
 std::string boardToFEN(Board& board) {
-    JWLogWarning << "boardToFen() Not implemented yet" << endLog;
+    JWLogWarning << "boardToFen(): Not implemented yet" << endLog;
     return "";
 }
 
@@ -160,7 +217,7 @@ Move generateMove(Game& game, std::string move, Color byColor, int moveNumber) {
     }
 
     if (boardPiece == nullptr) {
-        JWLogError << "Could not find chess piece " << move[0]
+        JWLogError << "Could not find chess piece for move " << move
                    << endLog;
     }
 
