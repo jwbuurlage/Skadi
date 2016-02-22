@@ -16,7 +16,6 @@ struct Square {
     Piece* piece;
 };
 
-
 const static std::string columnNames = "abcdefgh";
 const static std::string rowNames = "12345678";
 

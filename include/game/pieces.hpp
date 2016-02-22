@@ -99,7 +99,8 @@ class King : public Piece {
     std::vector<Square*> targets() override;
 };
 
-std::unique_ptr<Piece> createPiece(PieceObserver* game, Board* board, ChessPiece piece,
-                                   int row, int col, Color color);
+std::unique_ptr<Piece> createPiece(PieceObserver* game, Board* board,
+                                   ChessPiece piece, int row, int col,
+                                   Color color);
 
 } // namespace Skadi
