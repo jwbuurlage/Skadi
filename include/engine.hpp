@@ -3,26 +3,20 @@
 #include "types.hpp"
 #include "util/notation.hpp"
 #include "game/game.hpp"
+#include "searcher.hpp"
+#include "evaluator.hpp"
 
 namespace Skadi {
 
-template <class Evaluator, class Searcher>
 class Engine {
   public:
-    Engine(int depth, Color color) : depth_(depth), color_(color) {
-        setBoardfromFEN(game_, getBoard(), "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    }
+    Engine(int depth, Color color);
+    inline Board& getBoard() { return game_.getBoard(); }
+    inline const Board& getBoard() const { return game_.getBoard(); }
 
-    Board& getBoard() { return game_.getBoard(); }
-    const Board& getBoard() const { return game_.getBoard(); }
+    void forcedMove(std::string moveString);
 
-    void forcedMove(std::string moveString) {
-        auto move = generateMove(game_, moveString, game_.colorToMove(), game_.getHalfMove());
-        move.make();
-        game_.nextMove();
-    }
-
-    void makeMove() {
+    inline void makeMove() {
         game_.nextMove();
     }
 
@@ -31,8 +25,8 @@ class Engine {
     Color color_;
     Game game_;
 
-    Evaluator evaluator;
-    Searcher searcher;
+    std::unique_ptr<Evaluator> evaluator;
+    std::unique_ptr<Searcher> searcher;
 };
 
 } // namespace Skadi

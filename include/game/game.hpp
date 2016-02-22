@@ -19,47 +19,27 @@ struct CastlingRights {
 
 class Game : public PieceObserver {
   public:
-    std::vector<Piece*> getActivePieces() { return activePieces; }
+    std::vector<Piece*> getActivePieces();
 
-    Board& getBoard() { return board_; }
-    const Board& getBoard() const { return board_; }
+    Board& getBoard();
+    const Board& getBoard() const;
 
-    void activate(Piece* piece) override {
-        activePieces.push_back(piece);
-        activePiecesForColor[piece->getColor()].push_back(piece);
-    }
+    void activate(Piece* piece) override;
 
-    void deactivate(Piece* piece) override {
-        activePieces.erase(
-            std::remove(activePieces.begin(), activePieces.end(), piece),
-            activePieces.end());
+    void deactivate(Piece* piece) override;
+    Color colorToMove() const;
 
-        activePiecesForColor[piece->getColor()].erase(
-            std::remove(activePieces.begin(), activePieces.end(), piece),
-            activePieces.end());
-    }
+    void nextMove();
 
-    Color colorToMove() const {
-        return (halfMove_ % 2 == 1) ? Color::white : Color::black;
-    }
+    int getHalfMove() const;
+    void setHalfMove(int halfMove);
 
-    void nextMove() {
-        halfMove_ += 1;
-        move_ = (halfMove_ - 1) / 2 + 1;
-        fiftyMoves_ += 1;
-    }
+    void resetFiftyMoves(int moves = 0);
 
-    int getHalfMove() const { return halfMove_; }
-    void setHalfMove(int halfMove) { halfMove_ = halfMove; }
+    CastlingRights& getCastlingRights();
 
-    void resetFiftyMoves(int moves = 0) {
-        fiftyMoves_ = moves;
-    }
-
-    CastlingRights& getCastlingRights() { return castlingRights_; }
-
-    void setEnPassentSquare(Square* square) { enPassentSquare = square; }
-    void setMove(int move) { move_ = move; };
+    void setEnPassentSquare(Square* square);
+    void setMove(int move);
 
   private:
     std::vector<Piece*> activePieces;

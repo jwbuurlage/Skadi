@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
     auto game = startGame(args);
 
     auto engine =
-        Skadi::Engine<Skadi::PointEvaluator, Skadi::BruteForceSearcher>(
+        Skadi::Engine(
             game.depth, (game.whitePlayer == 'h' ? Skadi::Color::black
                                                  : Skadi::Color::white));
 

@@ -10,33 +10,19 @@
 
 namespace Skadi {
 
+class Piece;
+
 class Board {
   public:
-    Board() {
-        for (int i = 0; i < size_; ++i) {
-            for (int j = 0; j < size_; ++j) {
-                squares_[i][j].row = i;
-                squares_[i][j].column = j;
-                squares_[i][j].piece = nullptr;
-            }
-        }
-    }
+    Board();
 
-    void addPiece(std::unique_ptr<Piece>&& piece) {
-        pieces_.push_back(std::move(piece));
-    }
+    void addPiece(std::unique_ptr<Piece>&& piece);
+    bool gameOver() const;
 
-    bool gameOver() const { return false; }
+    Square* getSquare(int row, int col);
+    Square* getSquare(std::string description);
 
-    Square* getSquare(int row, int col) { return &squares_[row][col]; }
-    Square* getSquare(std::string description) {
-        return getSquare(rowNames.find(description[1]),
-                         columnNames.find(description[0]));
-    }
-
-    const std::vector<std::unique_ptr<Piece>>& getPieces() const {
-        return pieces_;
-    }
+    const std::vector<std::unique_ptr<Piece>>& getPieces() const;
 
     static constexpr int getSize() { return size_; }
 
