@@ -25,9 +25,9 @@ Are supplied as submodules within the git repository.
   - [x] Basic movement of chess pieces
   - [x] Capturing
   - [ ] Special moves
-    - [ ] en-passent
-    - [ ] castling
-    - [ ] promotion
+    - [ ] En-passent
+    - [ ] Castling
+    - [ ] Pawn promotion
   - [ ] Understands check / checkmate
   - [ ] Stalemate / 50 move rule
 - [ ] **Can be used to play chess against a simple AI**
