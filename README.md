@@ -32,3 +32,4 @@ Are supplied as submodules within the git repository.
   - [ ] Stalemate / 50 move rule
 - [ ] **Can be used to play chess against a simple AI**
   - [ ] Greedy search up to a certain depth, with a simple evaluation function
+  - [ ] Supports [UCI](https://en.wikipedia.org/wiki/Universal_Chess_Interface)
