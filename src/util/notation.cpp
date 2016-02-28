@@ -1,4 +1,4 @@
-#include "engine.hpp"
+#include "util/notation.hpp"
 
 namespace Skadi {
 
@@ -94,7 +94,7 @@ std::string boardToFEN(Board& board) {
     return "";
 }
 
-Move generateMove(Game& game, std::string move, Color byColor, int moveNumber) {
+Move generateMove(Game& game, std::string move, Color byColor, int halfMoveNumber) {
     Board& board = game.getBoard();
 
     if (move.size() < 2) {
@@ -191,8 +191,10 @@ Move generateMove(Game& game, std::string move, Color byColor, int moveNumber) {
             continue;
 
         // can it reach the target square?
-        if (piece->canTarget(targetSquare->row, targetSquare->column)) {
-            boardPiece = piece;
+        auto candidateMove = piece->moveForTarget(
+            targetSquare->row, targetSquare->column, halfMoveNumber);
+        if (candidateMove.isLegal()) {
+            return candidateMove;
         }
 
         // does it have the correct credentials?
@@ -204,7 +206,7 @@ Move generateMove(Game& game, std::string move, Color byColor, int moveNumber) {
                    << endLog;
     }
 
-    return Move(&game, &board, boardPiece, targetSquare, moveNumber);
+    return Move(&game, &board, boardPiece, targetSquare, halfMoveNumber);
 }
 
 } // namespace Skadi

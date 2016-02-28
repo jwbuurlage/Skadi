@@ -2,19 +2,22 @@
 
 #include <jw/logging.hpp>
 
-#include "game.hpp"
-#include "pieces.hpp"
-#include "board.hpp"
-
 namespace Skadi {
+
+class Game;
+class Board;
+class Piece;
+struct Square;
 
 class Move {
   public:
-    Move(Game* game, Board* board, Piece* piece, Square* target, int moveNumber);
+    Move(Game* game, Board* board, Piece* piece, Square* target, int halfMoveNumber);
 
-    bool isLegal() const;
+    virtual bool isLegal() const;
     virtual void make();
     void unmake();
+
+    Square* getTarget() const;
 
   protected:
     Game* game_;
@@ -22,13 +25,14 @@ class Move {
     Piece* piece_;
     Square* target_;
 
-    int moveNumber_;
+    int halfMoveNumber_;
 };
 
-class NullMove : public Move{
+class NullMove : public Move {
   public:
     NullMove() : Move(nullptr, nullptr, nullptr, nullptr, 0) {}
     void make() override { }
+    bool isLegal() const override { return false; }
 };
 
 class EnPassentMove : public Move {

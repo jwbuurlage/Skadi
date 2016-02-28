@@ -1,4 +1,6 @@
 #include "game/pieces.hpp"
+#include "game/board.hpp"
+#include "game/moves.hpp"
 
 namespace Skadi {
 
@@ -24,16 +26,16 @@ void Piece::move(int row, int col, int moveNumber) {
 int Piece::getRow() const { return row_; }
 int Piece::getColumn() const { return column_; }
 
-std::vector<Square*> Piece::targets() { return std::vector<Square*>(); }
+std::vector<Move> Piece::moves(int) { return std::vector<Move>(); }
 
 ChessPiece Piece::getType() const { return ChessPiece::none; }
 
-bool Piece::canTarget(int row, int col) {
-    for (auto square : targets()) {
-        if (square->row == row && square->column == col)
-            return true;
+Move Piece::moveForTarget(int row, int col, int halfMoveNumber) {
+    for (auto move : moves(halfMoveNumber)) {
+        if (move.getTarget()->row == row && move.getTarget()->column == col)
+            return move;
     }
-    return false;
+    return NullMove();
 }
 
 Color Piece::getColor() const { return color_; }
@@ -47,8 +49,10 @@ void Piece::capture() {
 
 bool Piece::isCaptured() const { return captured_; }
 
-void Piece::squaresForDirection(std::vector<int> di, std::vector<int> dj,
-                         std::vector<Square*>& targets) {
+void Piece::filterValidMovesInDirection(std::vector<int> di,
+                                        std::vector<int> dj,
+                                        std::vector<Move>& moves,
+                                        int halfMoveNumber) {
     for (size_t k = 0; k < di.size(); ++k) {
         for (int i = row_ + di[k], j = column_ + dj[k];
              i >= 0 && i < board_->getSize() && j >= 0 && j < board_->getSize();
@@ -56,16 +60,18 @@ void Piece::squaresForDirection(std::vector<int> di, std::vector<int> dj,
             auto square = board_->getSquare(i, j);
             if (square->piece != nullptr) {
                 if (square->piece->getColor() != color_)
-                    targets.push_back(square);
+                    moves.push_back(
+                        Move((Game*)game_, board_, this, square, halfMoveNumber));
                 break;
             }
-            targets.push_back(square);
+            moves.push_back(
+                Move((Game*)game_, board_, this, square, halfMoveNumber));
         }
     }
 }
 
-void Piece::filterValidSquares(std::vector<int> di, std::vector<int> dj,
-                        std::vector<Square*>& targets) {
+void Piece::filterValidMoves(std::vector<int> di, std::vector<int> dj,
+                             std::vector<Move>& moves, int halfMoveNumber) {
     for (size_t k = 0; k < di.size(); ++k) {
         int i = row_ + di[k];
         int j = column_ + dj[k];
@@ -74,17 +80,18 @@ void Piece::filterValidSquares(std::vector<int> di, std::vector<int> dj,
             auto square = board_->getSquare(i, j);
             if (square->piece != nullptr) {
                 if (square->piece->getColor() != color_)
-                    targets.push_back(square);
+                    moves.push_back(
+                        Move((Game*)game_, board_, this, square, halfMoveNumber));
             } else {
-                targets.push_back(square);
+                moves.push_back(
+                    Move((Game*)game_, board_, this, square, halfMoveNumber));
             }
         }
     }
 }
 
-
-std::vector<Square*> Pawn::targets() {
-    std::vector<Square*> targets;
+std::vector<Move> Pawn::moves(int halfMoveNumber) {
+    std::vector<Move> moves;
 
     // the target row is always one 'forward'
     auto targetRow = (color_ == Color::white) ? row_ + 1 : row_ - 1;
@@ -93,7 +100,8 @@ std::vector<Square*> Pawn::targets() {
     if (column_ > 0) {
         auto leftSquare = board_->getSquare(targetRow, column_ - 1);
         if (leftSquare->piece != nullptr) {
-            targets.push_back(leftSquare);
+            moves.push_back(
+                Move((Game*)game_, board_, this, leftSquare, halfMoveNumber));
         }
     }
 
@@ -101,60 +109,62 @@ std::vector<Square*> Pawn::targets() {
     if (column_ < board_->getSize() - 1) {
         auto rightSquare = board_->getSquare(targetRow, column_ + 1);
         if (rightSquare->piece != nullptr) {
-            targets.push_back(rightSquare);
+            moves.push_back(
+                Move((Game*)game_, board_, this, rightSquare, halfMoveNumber));
         }
     }
 
     // can move forward
     auto forwardSquare = board_->getSquare(targetRow, column_);
     if (forwardSquare->piece == nullptr) {
-        targets.push_back(forwardSquare);
+        moves.push_back(Move((Game*)game_, board_, this, forwardSquare,
+                             halfMoveNumber));
         // if not moved yet, can move two
         if (lastMoved_ == 0) {
             auto targetRowNext = (color_ == Color::white) ? row_ + 2 : row_ - 2;
             auto nextForwardSquare = board_->getSquare(targetRowNext, column_);
             if (nextForwardSquare->piece == nullptr)
-                targets.push_back(nextForwardSquare);
+                moves.push_back(Move((Game*)game_, board_, this,
+                                     nextForwardSquare, halfMoveNumber));
         }
     }
 
-    // FIXME: can capture en passent
-    // ...
-
-    return targets;
+    return moves;
 }
 
-std::vector<Square*> Rook::targets() {
-    std::vector<Square*> targets;
-    squaresForDirection({0, 1, 0, -1}, {-1, 0, 1, 0}, targets);
-    return targets;
+std::vector<Move> Rook::moves(int halfMoveNumber) {
+    std::vector<Move> moves;
+    filterValidMovesInDirection({0, 1, 0, -1}, {-1, 0, 1, 0}, moves, halfMoveNumber);
+    return moves;
 }
 
-std::vector<Square*> Knight::targets() {
-    std::vector<Square*> targets;
-    filterValidSquares({2, 2, 1, 1, -1, -1, -2, -2},
-                       {1, -1, 2, -2, 2, -2, 1, -1}, targets);
-    return targets;
+std::vector<Move> Knight::moves(int halfMoveNumber) {
+    std::vector<Move> moves;
+    filterValidMoves({2, 2, 1, 1, -1, -1, -2, -2}, {1, -1, 2, -2, 2, -2, 1, -1},
+                     moves, halfMoveNumber);
+    return moves;
 }
 
-std::vector<Square*> Bishop::targets() {
-    std::vector<Square*> targets;
-    squaresForDirection({1, -1, 1, -1}, {1, 1, -1, -1}, targets);
-    return targets;
+std::vector<Move> Bishop::moves(int halfMoveNumber) {
+    std::vector<Move> moves;
+    filterValidMovesInDirection({1, -1, 1, -1}, {1, 1, -1, -1}, moves,
+                                halfMoveNumber);
+    return moves;
 }
 
-std::vector<Square*> Queen::targets() {
-    std::vector<Square*> targets;
-    squaresForDirection({0, 1, 0, -1, 1, -1, 1, -1},
-                        {-1, 0, 1, 0, 1, 1, -1, -1}, targets);
-    return targets;
+std::vector<Move> Queen::moves(int halfMoveNumber) {
+    std::vector<Move> moves;
+    filterValidMovesInDirection({0, 1, 0, -1, 1, -1, 1, -1},
+                                {-1, 0, 1, 0, 1, 1, -1, -1}, moves,
+                                halfMoveNumber);
+    return moves;
 }
 
-std::vector<Square*> King::targets() {
-    std::vector<Square*> targets;
-    filterValidSquares({1, 1, 1, 0, 0, -1, -1, -1}, {1, 0, -1, 1, -1, 1, 0, -1},
-                       targets);
-    return targets;
+std::vector<Move> King::moves(int halfMoveNumber) {
+    std::vector<Move> moves;
+    filterValidMoves({1, 1, 1, 0, 0, -1, -1, -1}, {1, 0, -1, 1, -1, 1, 0, -1},
+                     moves, halfMoveNumber);
+    return moves;
 }
 
 std::unique_ptr<Piece> createPiece(PieceObserver* game, Board* board, ChessPiece piece,
