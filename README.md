@@ -1,11 +1,16 @@
 # Skadi
 A simple chess engine written in modern C++.
 
-Skadi comes with a basic interface which can be played to play games against the engine, let the engine play a game against itself, or play against another human player. This can be built and run by issuing:
+Skadi comes with a basic interface which can be played to play games against the engine, let the engine play a game against itself, or play against another human player.
+
+The library and interface can be built and run by issuing:
 ```
+cd build
+cmake .
 make
-./bin/simple_chess
+./bin/simple_interface
 ```
+Simple algebraic notation such as `e4`, `Nxe4`, `exf8=Q+` is understood, and can be used as input to the interface. Furthermore, the library supports loading from FEN, and will support PGN in the future.
 
 ## Dependencies
 
@@ -20,10 +25,11 @@ Are supplied as submodules within the git repository.
   - [x] Basic movement of chess pieces
   - [x] Capturing
   - [ ] Special moves
-    - [ ] en-passent
-    - [ ] castling
-    - [ ] promotion
+    - [ ] En-passent
+    - [ ] Castling
+    - [ ] Pawn promotion
   - [ ] Understands check / checkmate
   - [ ] Stalemate / 50 move rule
 - [ ] **Can be used to play chess against a simple AI**
   - [ ] Greedy search up to a certain depth, with a simple evaluation function
+  - [ ] Supports [UCI](https://en.wikipedia.org/wiki/Universal_Chess_Interface)
