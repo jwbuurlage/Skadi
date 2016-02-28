@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 
 #include <jw.hpp>
 #include <skadi.hpp>
@@ -19,10 +20,25 @@ Game startGame(const jw::ArgParse& args) {
     return game;
 }
 
-std::string requestMove() {
-    std::string move;
-    std::cin >> move;
-    return move;
+std::unique_ptr<Skadi::Move> requestMove(Skadi::Engine& engine) {
+    std::string moveDescription;
+    std::cin >> moveDescription;
+    return Skadi::generateMove(engine.getGame(), moveDescription,
+                        engine.getGame().colorToMove(),
+                        engine.getGame().getHalfMove());
+}
+
+void playerMove(Skadi::Engine& engine, int turn) {
+    JWLogInfo << engine.getBoard();
+    std::unique_ptr<Skadi::Move> move = std::make_unique<Skadi::NullMove>();
+    while (!move->isLegal()) {
+        std::cout << (turn - 1) / 2 + 1 << "."
+                  << ((engine.getGame().colorToMove() == Skadi::Color::black)
+                          ? " (b) "
+                          : " (w) ");
+        move = requestMove(engine);
+    }
+    engine.forcedMove(move.get());
 }
 
 template <class Engine>
@@ -31,17 +47,13 @@ Skadi::Result playGame(const Game& game, Engine& engine) {
     while (!engine.getBoard().gameOver()) {
         if (turn % 2 == 1) {
             if (game.whitePlayer == 'h')  {
-                JWLogInfo << engine.getBoard();
-                std::cout << turn / 2 + 1 << "w. ";
-                engine.forcedMove(requestMove());
+                playerMove(engine, turn);
             } else {
               engine.makeMove();
             }
         } else {
             if (game.blackPlayer == 'h')  {
-                JWLogInfo << engine.getBoard();
-                std::cout << turn / 2 + 1 << "b. ";
-                engine.forcedMove(requestMove());
+                playerMove(engine, turn);
             } else {
               engine.makeMove();
             }
@@ -69,7 +81,7 @@ int main(int argc, char** argv) {
             game.depth, (game.whitePlayer == 'h' ? Skadi::Color::black
                                                  : Skadi::Color::white));
 
-    auto result = playGame(game, engine);
+    playGame(game, engine);
 
     return 0;
 }

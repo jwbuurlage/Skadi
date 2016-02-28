@@ -11,10 +11,13 @@ namespace Skadi {
 class Engine {
   public:
     Engine(int depth, Color color);
+
+    inline Game& getGame() { return game_; }
+ 
     inline Board& getBoard() { return game_.getBoard(); }
     inline const Board& getBoard() const { return game_.getBoard(); }
 
-    void forcedMove(std::string moveString);
+    void forcedMove(Move* move);
 
     inline void makeMove() {
         game_.nextMove();
