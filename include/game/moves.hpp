@@ -2,6 +2,8 @@
 
 #include <jw/logging.hpp>
 
+#include "types.hpp"
+
 namespace Skadi {
 
 class Game;
@@ -58,6 +60,20 @@ class CastlingMove : public Move {
 
   private:
     CastlingType type_;
+};
+
+class PromotionMove : public Move {
+  public:
+    PromotionMove(Game* game, Board* board, Piece* piece, Square* target,
+                  int moveNumber, ChessPiece promotionPiece)
+        : Move(game, board, piece, target, moveNumber),
+          promotionPiece_(promotionPiece) {}
+
+    void make() override;
+    ChessPiece getPromotionPiece() const { return promotionPiece_; }
+
+  private:
+    ChessPiece promotionPiece_;
 };
 
 } // namespace Skadi

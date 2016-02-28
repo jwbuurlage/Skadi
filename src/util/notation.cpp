@@ -88,8 +88,8 @@ void setBoardfromFEN(Game& game, Board& board, std::string fen) {
     int moves = 0;
     ss >> moves;
     game.setMove(moves);
-    int halfMoves = (activeColor == Color::white) ? (moves - 1) * 2 + 1
-                                                 : moves * 2;
+    int halfMoves =
+        (activeColor == Color::white) ? (moves - 1) * 2 + 1 : moves * 2;
     game.setHalfMove(halfMoves);
 }
 
@@ -98,7 +98,8 @@ std::string boardToFEN(Board& board) {
     return "";
 }
 
-std::unique_ptr<Move> generateMove(Game& game, std::string move, Color byColor, int halfMoveNumber) {
+std::unique_ptr<Move> generateMove(Game& game, std::string move, Color byColor,
+                                   int halfMoveNumber) {
     Board& board = game.getBoard();
 
     // FIXME make a better effort to see if the move is not ill-formed to start
@@ -136,7 +137,7 @@ std::unique_ptr<Move> generateMove(Game& game, std::string move, Color byColor, 
             pieceAfterPromotion = pieceForLabel.at(move[move.size() - 1]);
         } else {
             JWLogWarning << "Unknown chess piece with label "
-                       << move[move.size() - 1] << endLog;
+                         << move[move.size() - 1] << endLog;
         }
         move.pop_back();
     }
@@ -164,9 +165,18 @@ std::unique_ptr<Move> generateMove(Game& game, std::string move, Color byColor, 
             pieceToMove = pieceForLabel.at(move[0]);
         } else {
             JWLogWarning << "Unknown chess piece with label " << move[0]
-                       << endLog;
+                         << endLog;
         }
         move = move.substr(1);
+    }
+
+
+    if (pieceAfterPromotion != ChessPiece::none) {
+        if (pieceToMove != ChessPiece::pawn) {
+            JWLogWarning << "Invalid input, promotion only possible with pawn"
+                         << endLog;
+            return std::make_unique<NullMove>();
+        }
     }
 
     // disambiguiate
@@ -194,9 +204,18 @@ std::unique_ptr<Move> generateMove(Game& game, std::string move, Color byColor, 
         if (piece->getColor() != byColor)
             continue;
 
-        // can it reach the target square?
-        auto candidateMove = piece->moveForTarget(
-            targetSquare->row, targetSquare->column, halfMoveNumber);
+        std::unique_ptr<Move> candidateMove;
+        if (pieceAfterPromotion == ChessPiece::none) {
+            // can it reach the target square?
+             candidateMove = piece->moveForTarget(
+                targetSquare->row, targetSquare->column, halfMoveNumber);
+        } else {
+            candidateMove = ((Pawn*)piece)
+                                ->moveForTargetWithPromotion(
+                                    targetSquare->row, targetSquare->column,
+                                    halfMoveNumber, pieceAfterPromotion);
+        }
+
         if (candidateMove->isLegal()) {
             return candidateMove;
         }
@@ -207,7 +226,7 @@ std::unique_ptr<Move> generateMove(Game& game, std::string move, Color byColor, 
 
     if (boardPiece == nullptr) {
         JWLogWarning << "Could not find chess piece for move " << move
-                   << endLog;
+                     << endLog;
     }
 
     return std::make_unique<Move>(&game, &board, boardPiece, targetSquare,

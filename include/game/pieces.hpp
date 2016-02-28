@@ -36,6 +36,8 @@ class Piece {
 
     int getLastMoved() const;
 
+    void setLastMoved(int lastMoved) { lastMoved_ = lastMoved; }
+
   protected:
     PieceObserver* game_;
     Board* board_;
@@ -60,7 +62,12 @@ class Pawn : public Piece {
     ChessPiece getType() const override { return ChessPiece::pawn; }
 
     void move(int row, int col, int moveNumber) override;
+    std::unique_ptr<Move> promotionMove(int halfMoveNumber, ChessPiece piece);
     std::vector<std::unique_ptr<Move>> moves(int halfMove) override;
+
+    std::unique_ptr<Move> moveForTargetWithPromotion(int row, int col,
+                                                     int halfMoveNumber,
+                                                     ChessPiece promotionPiece);
 
     bool didMoveDouble() const { return movedDouble_; }
 

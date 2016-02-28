@@ -97,17 +97,33 @@ void Piece::filterValidMoves(std::vector<int> di, std::vector<int> dj,
 }
 
 std::vector<std::unique_ptr<Move>> Pawn::moves(int halfMoveNumber) {
+    static const std::vector<ChessPiece> promotionPieces = {
+        ChessPiece::rook,
+        ChessPiece::knight,
+        ChessPiece::bishop,
+        ChessPiece::queen
+    };
+
     std::vector<std::unique_ptr<Move>> moves;
 
     // the target row is always one 'forward'
     auto targetRow = (color_ == Color::white) ? row_ + 1 : row_ - 1;
+    bool promote = (targetRow == 0 || targetRow == board_->getSize() - 1);
 
     // can capture left
     if (column_ > 0) {
         auto leftSquare = board_->getSquare(targetRow, column_ - 1);
         if (leftSquare->piece != nullptr) {
+            if (!promote) {
             moves.push_back(
                 std::make_unique<Move>((Game*)game_, board_, this, leftSquare, halfMoveNumber));
+            } else {
+                for (auto piece : promotionPieces) {
+                    moves.push_back(std::make_unique<PromotionMove>(
+                        (Game*)game_, board_, this, leftSquare, halfMoveNumber,
+                        piece));
+                }
+            }
         } else {
             // can we capture en-passant
             auto leftEnPassant = board_->getSquare(row_, column_ - 1);
@@ -126,8 +142,16 @@ std::vector<std::unique_ptr<Move>> Pawn::moves(int halfMoveNumber) {
     if (column_ < board_->getSize() - 1) {
         auto rightSquare = board_->getSquare(targetRow, column_ + 1);
         if (rightSquare->piece != nullptr) {
-            moves.push_back(
-                std::make_unique<Move>((Game*)game_, board_, this, rightSquare, halfMoveNumber));
+            if (!promote) {
+                moves.push_back(std::make_unique<Move>(
+                    (Game*)game_, board_, this, rightSquare, halfMoveNumber));
+            } else {
+                for (auto piece : promotionPieces) {
+                    moves.push_back(std::make_unique<PromotionMove>(
+                        (Game*)game_, board_, this, rightSquare, halfMoveNumber,
+                        piece));
+                }
+            }
         } else {
             // can we capture en-passant
             auto rightEnPassant = board_->getSquare(row_, column_ + 1);
@@ -146,8 +170,17 @@ std::vector<std::unique_ptr<Move>> Pawn::moves(int halfMoveNumber) {
     // can move forward
     auto forwardSquare = board_->getSquare(targetRow, column_);
     if (forwardSquare->piece == nullptr) {
-        moves.push_back(std::make_unique<Move>((Game*)game_, board_, this, forwardSquare,
-                             halfMoveNumber));
+            if (!promote) {
+                moves.push_back(std::make_unique<Move>(
+                    (Game*)game_, board_, this, forwardSquare, halfMoveNumber));
+            } else {
+                for (auto piece : promotionPieces) {
+                    moves.push_back(std::make_unique<PromotionMove>(
+                        (Game*)game_, board_, this, forwardSquare,
+                        halfMoveNumber, piece));
+                }
+            }
+
         // if not moved yet, can move two
         if (lastMoved_ == 0) {
             auto targetRowNext = (color_ == Color::white) ? row_ + 2 : row_ - 2;
@@ -157,7 +190,6 @@ std::vector<std::unique_ptr<Move>> Pawn::moves(int halfMoveNumber) {
                                      nextForwardSquare, halfMoveNumber));
         }
     }
-
 
     return moves;
 }
@@ -252,7 +284,20 @@ std::unique_ptr<Move> King::castleMove(int halfMoveNumber, CastlingType type) {
                 halfMoveNumber, CastlingType::castle_short);
     }
 
-    JWLogDebug << "Castling not valid" << endLog;
+    return std::make_unique<NullMove>();
+}
+
+std::unique_ptr<Move>
+Pawn::moveForTargetWithPromotion(int row, int col, int halfMoveNumber,
+                                 ChessPiece promotionPiece) {
+    if (row != 0 && row != board_->getSize() - 1)
+        return std::make_unique<NullMove>();
+
+    for (auto& move : moves(halfMoveNumber)) {
+        if (move->getTarget()->row == row && move->getTarget()->column == col &&
+            ((PromotionMove*)move.get())->getPromotionPiece() == promotionPiece)
+            return std::move(move);
+    }
 
     return std::make_unique<NullMove>();
 }

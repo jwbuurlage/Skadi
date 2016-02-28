@@ -69,4 +69,14 @@ void CastlingMove::make() {
     Move::make();
 }
 
+void PromotionMove::make() {
+    Move::make();
+
+    // update piece to promoted piece
+    piece_->capture();
+    board_->addPiece(createPiece(game_, board_, promotionPiece_, target_->row,
+                                 target_->column, piece_->getColor()));
+    target_->piece->setLastMoved(halfMoveNumber_);
+}
+
 } // namespace Skadi

@@ -24,10 +24,10 @@ Are supplied as submodules within the git repository.
 - [ ] **Can be used to play chess against another human**
   - [x] Basic movement of chess pieces
   - [x] Capturing
-  - [ ] Special moves
+  - [x] Special moves
     - [x] En passant
     - [x] Castling
-    - [ ] Pawn promotion
+    - [x] Pawn promotion
   - [ ] Understands check / checkmate
   - [ ] Stalemate / 50 move rule
 - [ ] **Can be used to play chess against a simple AI**
