@@ -21,18 +21,20 @@ class Piece {
   public:
     Piece(PieceObserver* game, Board* board, int row, int col, Color color);
 
-    void move(int row, int col, int moveNumber);
+    virtual void move(int row, int col, int moveNumber);
     int getRow() const;
     int getColumn() const;
 
-    virtual std::vector<Move> moves(int halfMoveNumber);
-    virtual Move moveForTarget(int row, int col, int halfMoveNumber);
+    virtual std::vector<std::unique_ptr<Move>> moves(int halfMoveNumber);
+    virtual std::unique_ptr<Move> moveForTarget(int row, int col, int halfMoveNumber);
 
     Color getColor() const;
     virtual ChessPiece getType() const;
 
     void capture();
     bool isCaptured() const;
+
+    int getLastMoved() const;
 
   protected:
     PieceObserver* game_;
@@ -46,10 +48,10 @@ class Piece {
     bool captured_ = false;
 
     void filterValidMovesInDirection(std::vector<int> di, std::vector<int> dj,
-                                     std::vector<Move>& moves,
+                                     std::vector<std::unique_ptr<Move>>& moves,
                                      int halfMoveNumber);
     void filterValidMoves(std::vector<int> di, std::vector<int> dj,
-                          std::vector<Move>& moves, int halfMoveNumber);
+                          std::vector<std::unique_ptr<Move>>& moves, int halfMoveNumber);
 };
 
 class Pawn : public Piece {
@@ -57,7 +59,13 @@ class Pawn : public Piece {
     using Piece::Piece;
     ChessPiece getType() const override { return ChessPiece::pawn; }
 
-    std::vector<Move> moves(int halfMove) override;
+    void move(int row, int col, int moveNumber) override;
+    std::vector<std::unique_ptr<Move>> moves(int halfMove) override;
+
+    bool didMoveDouble() const { return movedDouble_; }
+
+  private:
+    bool movedDouble_ = false;
 };
 
 class Rook : public Piece {
@@ -65,7 +73,7 @@ class Rook : public Piece {
     using Piece::Piece;
     ChessPiece getType() const override { return ChessPiece::rook; }
 
-    std::vector<Move> moves(int halfMove) override;
+    std::vector<std::unique_ptr<Move>> moves(int halfMove) override;
 };
 
 class Knight : public Piece {
@@ -73,7 +81,7 @@ class Knight : public Piece {
     using Piece::Piece;
     ChessPiece getType() const override { return ChessPiece::knight; }
 
-    std::vector<Move> moves(int halfMove) override;
+    std::vector<std::unique_ptr<Move>> moves(int halfMove) override;
 };
 
 class Bishop : public Piece {
@@ -81,7 +89,7 @@ class Bishop : public Piece {
     using Piece::Piece;
     ChessPiece getType() const override { return ChessPiece::bishop; }
 
-    std::vector<Move> moves(int halfMove) override;
+    std::vector<std::unique_ptr<Move>> moves(int halfMove) override;
 };
 
 class Queen : public Piece {
@@ -89,7 +97,7 @@ class Queen : public Piece {
     using Piece::Piece;
     ChessPiece getType() const override { return ChessPiece::queen; }
 
-    std::vector<Move> moves(int halfMove) override;
+    std::vector<std::unique_ptr<Move>> moves(int halfMove) override;
 };
 
 class King : public Piece {
@@ -97,7 +105,7 @@ class King : public Piece {
     using Piece::Piece;
     ChessPiece getType() const override { return ChessPiece::king; }
 
-    std::vector<Move> moves(int halfMove) override;
+    std::vector<std::unique_ptr<Move>> moves(int halfMove) override;
 };
 
 std::unique_ptr<Piece> createPiece(PieceObserver* game, Board* board,

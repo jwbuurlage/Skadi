@@ -24,10 +24,7 @@ void Move::make() {
         return;
     }
     if (target_->piece != nullptr) {
-        game_->deactivate(target_->piece);
         target_->piece->capture();
-        target_->piece = nullptr;
-
         // FIXME: save for unmake
         game_->resetFiftyMoves();
     }
@@ -41,6 +38,23 @@ void Move::make() {
 
 void Move::unmake() {
     // undo everything
+}
+
+EnPassantMove::EnPassantMove(Game* game, Board* board, Piece* piece,
+                             Square* target, int halfMoveNumber,
+                             EnPassantDirection direction)
+    : Move(game, board, piece, target, halfMoveNumber), direction_(direction) {}
+
+void EnPassantMove::make() {
+    if (direction_ == EnPassantDirection::left) {
+        board_->getSquare(piece_->getRow(), piece_->getColumn() - 1)
+            ->piece->capture();
+    } else if (direction_ == EnPassantDirection::right) {
+        board_->getSquare(piece_->getRow(), piece_->getColumn() + 1)
+            ->piece->capture();
+    }
+
+    Move::make();
 }
 
 } // namespace Skadi

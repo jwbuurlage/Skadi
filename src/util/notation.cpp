@@ -1,3 +1,7 @@
+#include <string>
+#include <sstream>
+#include <map>
+
 #include "util/notation.hpp"
 
 namespace Skadi {
@@ -94,12 +98,12 @@ std::string boardToFEN(Board& board) {
     return "";
 }
 
-Move generateMove(Game& game, std::string move, Color byColor, int halfMoveNumber) {
+std::unique_ptr<Move> generateMove(Game& game, std::string move, Color byColor, int halfMoveNumber) {
     Board& board = game.getBoard();
 
     if (move.size() < 2) {
-        JWLogError << "Invalid move submitted" << endLog;
-        return NullMove();
+        JWLogWarning << "Invalid move submitted" << endLog;
+        return std::make_unique<NullMove>();
     }
 
     // FIXME make an effort to see if the move is not ill-formed to start with
@@ -131,7 +135,7 @@ Move generateMove(Game& game, std::string move, Color byColor, int halfMoveNumbe
         if (pieceForLabel.find(move[move.size() - 1]) != pieceForLabel.end()) {
             pieceAfterPromotion = pieceForLabel.at(move[move.size() - 1]);
         } else {
-            JWLogError << "Unknown chess piece with label "
+            JWLogWarning << "Unknown chess piece with label "
                        << move[move.size() - 1] << endLog;
         }
         move.pop_back();
@@ -159,7 +163,7 @@ Move generateMove(Game& game, std::string move, Color byColor, int halfMoveNumbe
         if (pieceForLabel.find(move[0]) != pieceForLabel.end()) {
             pieceToMove = pieceForLabel.at(move[0]);
         } else {
-            JWLogError << "Unknown chess piece with label " << move[0]
+            JWLogWarning << "Unknown chess piece with label " << move[0]
                        << endLog;
         }
         move = move.substr(1);
@@ -193,20 +197,21 @@ Move generateMove(Game& game, std::string move, Color byColor, int halfMoveNumbe
         // can it reach the target square?
         auto candidateMove = piece->moveForTarget(
             targetSquare->row, targetSquare->column, halfMoveNumber);
-        if (candidateMove.isLegal()) {
+        if (candidateMove->isLegal()) {
             return candidateMove;
         }
 
-        // does it have the correct credentials?
+        // FIXME: does it have the correct credentials?
         // check with departureRow and departureCol
     }
 
     if (boardPiece == nullptr) {
-        JWLogError << "Could not find chess piece for move " << move
+        JWLogWarning << "Could not find chess piece for move " << move
                    << endLog;
     }
 
-    return Move(&game, &board, boardPiece, targetSquare, halfMoveNumber);
+    return std::make_unique<Move>(&game, &board, boardPiece, targetSquare,
+                                  halfMoveNumber);
 }
 
 } // namespace Skadi

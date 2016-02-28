@@ -35,8 +35,15 @@ class NullMove : public Move {
     bool isLegal() const override { return false; }
 };
 
-class EnPassentMove : public Move {
+enum class EnPassantDirection { left, right };
+class EnPassantMove : public Move {
+  public:
+    EnPassantMove(Game* game, Board* board, Piece* piece, Square* target,
+         int halfMoveNumber, EnPassantDirection direction);
+    void make() override;
 
+  private:
+    EnPassantDirection direction_;
 };
 
 class CastlingMove : public Move {

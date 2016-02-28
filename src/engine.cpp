@@ -9,7 +9,7 @@ Engine::Engine(int depth, Color color) : depth_(depth), color_(color) {
 
 void Engine::forcedMove(std::string moveString) {
     auto move = generateMove(game_, moveString, game_.colorToMove(), game_.getHalfMove());
-    move.make();
+    move->make();
     game_.nextMove();
 }
 

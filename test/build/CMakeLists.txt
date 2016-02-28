@@ -9,10 +9,6 @@ include_directories(
 )
 link_directories(${CMAKE_BINARY_DIR}/../../bin/)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wfatal-errors -Wextra -g -O3")
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../../bin)
-
 set(LIB_NAME "skadi")
 set(TEST_NAME "skadi_tests")
 

@@ -25,7 +25,7 @@ Are supplied as submodules within the git repository.
   - [x] Basic movement of chess pieces
   - [x] Capturing
   - [ ] Special moves
-    - [ ] En-passent
+    - [x] En passant
     - [ ] Castling
     - [ ] Pawn promotion
   - [ ] Understands check / checkmate

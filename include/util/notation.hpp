@@ -1,8 +1,7 @@
 #pragma once
 
-#include <string>
-#include <sstream>
-#include <map>
+
+#include <memory>
 
 #include "game/pieces.hpp"
 #include "game/game.hpp"
@@ -18,6 +17,6 @@ namespace Skadi {
 void setBoardfromFEN(Game& game, Board& board, std::string fen);
 std::string boardToFEN(Board& board);
 
-Move generateMove(Game& game, std::string move, Color byColor, int moveNumber);
+std::unique_ptr<Move> generateMove(Game& game, std::string move, Color byColor, int moveNumber);
 
 } // namespace Skadi

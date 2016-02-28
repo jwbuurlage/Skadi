@@ -78,7 +78,7 @@ TEST_CASE("we can make basic moves SAN", "[notation]") {
             game, board,
             "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
-        Skadi::generateMove(game, "e4", Skadi::Color::white, 1).make();
+        Skadi::generateMove(game, "e4", Skadi::Color::white, 1)->make();
 
         // original piece is gone
         auto e2Square = board.getSquare("e2");
