@@ -19,9 +19,7 @@ class Engine {
 
     void forcedMove(Move* move);
 
-    inline void makeMove() {
-        game_.nextMove();
-    }
+    void makeMove();
 
   private:
     int depth_;

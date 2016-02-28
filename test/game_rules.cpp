@@ -53,6 +53,25 @@ TEST_CASE("basic movement", "[rules]") {
 
 // TEST_CASE("capturing", "[rules]") {}
 // TEST_CASE("en passent", "[rules]") {}
-// TEST_CASE("castling", "[rules]") {}
+TEST_CASE("castling", "[rules]") {
+    SECTION("short") {
+        Skadi::Game game;
+        Skadi::Board board;
+        Skadi::setBoardfromFEN(
+            game, board,
+            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+
+        Skadi::generateMove(game, "e4", Skadi::Color::white, 1)->make();
+        Skadi::generateMove(game, "e5", Skadi::Color::black, 2)->make();
+        Skadi::generateMove(game, "Be2", Skadi::Color::white, 3)->make();
+        Skadi::generateMove(game, "a5", Skadi::Color::black, 4)->make();
+        Skadi::generateMove(game, "Nf3", Skadi::Color::white, 5)->make();
+        Skadi::generateMove(game, "a4", Skadi::Color::black, 6)->make();
+        JWLogDebug << "before: " << endLog;
+        auto castleShort = Skadi::generateMove(game, "o-o", Skadi::Color::white, 7);
+
+        //REQUIRE(castleShort->isLegal());
+    }
+}
 // TEST_CASE("check and checkmate", "[rules]") {}
 // TEST_CASE("fifty moves rule", "[rules]") {}

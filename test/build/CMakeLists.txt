@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.0.0)
 
 project(skadi_tests)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wfatal-errors -Wextra -g -O3")
+
 include_directories(
     "../../include"
     "../../ext/jwutil/include"

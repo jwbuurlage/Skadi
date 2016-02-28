@@ -26,7 +26,8 @@ class Board {
 
     static constexpr int getSize() { return size_; }
 
-    bool squareUnderAttack(int row, int col, Color forColor) const;
+    bool squareUnderAttack(int row, int col, Color forColor,
+                           int halfMoveNumber) const;
 
   private:
     static constexpr int size_ = 8;

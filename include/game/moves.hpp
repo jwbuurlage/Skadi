@@ -19,6 +19,9 @@ class Move {
     virtual void make();
     void unmake();
 
+    // are we free to check with this move
+    virtual bool isFree() const { return true; }
+
     Square* getTarget() const;
 
   protected:
@@ -57,6 +60,8 @@ class CastlingMove : public Move {
         : Move(game, board, piece, target, moveNumber), type_(type) {}
 
     void make() override;
+
+    bool isFree() const override { return false; }
 
   private:
     CastlingType type_;

@@ -12,4 +12,15 @@ void Engine::forcedMove(Move* move) {
     game_.nextMove();
 }
 
+void Engine::makeMove() {
+    // apply first valid move
+    for (auto piece : game_.getActivePieces()) {
+        for (auto& move : piece->moves(game_.getHalfMove())) {
+            move->make();
+            game_.nextMove();
+            return;
+        }
+    }
+}
+
 } // namespace Skadi

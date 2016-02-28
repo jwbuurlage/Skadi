@@ -1,5 +1,6 @@
 #include "game/board.hpp"
 #include "game/pieces.hpp"
+#include "util/logging.hpp"
 
 namespace Skadi {
 
@@ -30,7 +31,17 @@ const std::vector<std::unique_ptr<Piece>>& Board::getPieces() const {
     return pieces_;
 }
 
-bool Board::squareUnderAttack(int row, int col, Color byColor) const {
+bool Board::squareUnderAttack(int row, int col, Color forColor, int halfMoveNumber) const {
+    for (auto& piece : pieces_) {
+
+        if (piece->isCaptured())
+            continue;
+        if (piece->getColor() == forColor)
+            continue;
+        if (piece->moveForTarget(row, col, halfMoveNumber)->isLegal()) {
+            return true;
+        }
+    }
     return false;
 }
 
