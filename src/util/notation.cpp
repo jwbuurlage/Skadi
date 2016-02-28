@@ -101,12 +101,12 @@ std::string boardToFEN(Board& board) {
 std::unique_ptr<Move> generateMove(Game& game, std::string move, Color byColor, int halfMoveNumber) {
     Board& board = game.getBoard();
 
+    // FIXME make a better effort to see if the move is not ill-formed to start
+    // with
     if (move.size() < 2) {
         JWLogWarning << "Invalid move submitted" << endLog;
         return std::make_unique<NullMove>();
     }
-
-    // FIXME make an effort to see if the move is not ill-formed to start with
 
     // treat castling separately
     auto king = (King*)(game.locatePiece(ChessPiece::king, byColor));

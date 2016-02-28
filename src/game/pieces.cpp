@@ -232,7 +232,7 @@ std::unique_ptr<Move> King::castleMove(int halfMoveNumber, CastlingType type) {
         targetSquareShort->piece->getType() == ChessPiece::rook &&
         targetSquareShort->piece->getLastMoved() == 0) {
         bool valid = true;
-        for (int col = column_; col < board_->getSize(); ++col) {
+        for (int col = column_; col < board_->getSize() - 1; ++col) {
             // under attack
             if (board_->squareUnderAttack(row_, col, color_)) {
                 valid = false;
@@ -251,6 +251,8 @@ std::unique_ptr<Move> King::castleMove(int halfMoveNumber, CastlingType type) {
                 (Game*)game_, board_, this, board_->getSquare(row_, 6),
                 halfMoveNumber, CastlingType::castle_short);
     }
+
+    JWLogDebug << "Castling not valid" << endLog;
 
     return std::make_unique<NullMove>();
 }

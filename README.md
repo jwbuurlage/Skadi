@@ -26,7 +26,7 @@ Are supplied as submodules within the git repository.
   - [x] Capturing
   - [ ] Special moves
     - [x] En passant
-    - [ ] Castling
+    - [x] Castling
     - [ ] Pawn promotion
   - [ ] Understands check / checkmate
   - [ ] Stalemate / 50 move rule
