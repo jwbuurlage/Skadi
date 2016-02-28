@@ -30,4 +30,8 @@ const std::vector<std::unique_ptr<Piece>>& Board::getPieces() const {
     return pieces_;
 }
 
+bool Board::squareUnderAttack(int row, int col, Color byColor) const {
+    return false;
+}
+
 } // namespace Skadi

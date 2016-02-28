@@ -41,6 +41,8 @@ class Game : public PieceObserver {
     void setEnPassentSquare(Square* square);
     void setMove(int move);
 
+    Piece* locatePiece(ChessPiece type, Color color) const;
+
   private:
     std::vector<Piece*> activePieces;
     std::map<Color, std::vector<Piece*>> activePiecesForColor = {

@@ -197,17 +197,79 @@ std::vector<std::unique_ptr<Move>> Queen::moves(int halfMoveNumber) {
     return moves;
 }
 
+std::unique_ptr<Move> King::castleMove(int halfMoveNumber, CastlingType type) {
+    if (lastMoved_ != 0)
+        return std::make_unique<NullMove>();
+
+    // long
+    auto targetSquare = board_->getSquare(row_, 0);
+    if (targetSquare->piece != nullptr &&
+        targetSquare->piece->getType() == ChessPiece::rook &&
+        targetSquare->piece->getLastMoved() == 0) {
+        bool valid = true;
+        for (int col = 2; col <= column_; ++col) {
+            // under attack
+            if (board_->squareUnderAttack(row_, col, color_)) {
+                valid = false;
+                break;
+            }
+            // blocking
+            if (col != column_) {
+                if (board_->getSquare(row_, col)->piece != nullptr) {
+                    valid = false;
+                    break;
+                }
+            }
+        }
+        if (valid)
+            return std::make_unique<CastlingMove>(
+                (Game*)game_, board_, this, board_->getSquare(row_, 2),
+                halfMoveNumber, CastlingType::castle_long);
+    }
+    // short
+    auto targetSquareShort = board_->getSquare(row_, board_->getSize());
+    if (targetSquareShort->piece != nullptr &&
+        targetSquareShort->piece->getType() == ChessPiece::rook &&
+        targetSquareShort->piece->getLastMoved() == 0) {
+        bool valid = true;
+        for (int col = column_; col < board_->getSize(); ++col) {
+            // under attack
+            if (board_->squareUnderAttack(row_, col, color_)) {
+                valid = false;
+                break;
+            }
+            // blocking
+            if (col != column_) {
+                if (board_->getSquare(row_, col)->piece != nullptr) {
+                    valid = false;
+                    break;
+                }
+            }
+        }
+        if (valid)
+            return std::make_unique<CastlingMove>(
+                (Game*)game_, board_, this, board_->getSquare(row_, 6),
+                halfMoveNumber, CastlingType::castle_short);
+    }
+
+    return std::make_unique<NullMove>();
+}
+
 std::vector<std::unique_ptr<Move>> King::moves(int halfMoveNumber) {
     std::vector<std::unique_ptr<Move>> moves;
     filterValidMoves({1, 1, 1, 0, 0, -1, -1, -1}, {1, 0, -1, 1, -1, 1, 0, -1},
                      moves, halfMoveNumber);
-
-    // FIXME check if long castle is still valid
-    // FIXME can not castle through check
+    auto castleMoveLong = castleMove(halfMoveNumber, CastlingType::castle_long);
+    if (castleMoveLong->isLegal())
+        moves.push_back(std::move(castleMoveLong));
+    auto castleMoveShort = castleMove(halfMoveNumber, CastlingType::castle_short);
+    if (castleMoveShort->isLegal())
+        moves.push_back(std::move(castleMoveShort));
 
     return moves;
 }
 
+// TODO: factory?
 std::unique_ptr<Piece> createPiece(PieceObserver* game, Board* board, ChessPiece piece,
                                    int row, int col, Color color) {
     switch (piece) {

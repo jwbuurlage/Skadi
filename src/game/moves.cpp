@@ -57,4 +57,18 @@ void EnPassantMove::make() {
     Move::make();
 }
 
+void CastlingMove::make() {
+    JWLogInfo << "CastlingMove::make()" << endLog;
+
+    if (type_ == CastlingType::castle_short) {
+        board_->getSquare(piece_->getRow(), board_->getSize() - 1)
+            ->piece->move(piece_->getRow(), 5, halfMoveNumber_);
+    } else if (type_ == CastlingType::castle_long) {
+        board_->getSquare(piece_->getRow(), 0)
+            ->piece->move(piece_->getRow(), 3, halfMoveNumber_);
+    }
+
+    Move::make();
+}
+
 } // namespace Skadi

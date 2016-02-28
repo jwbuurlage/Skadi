@@ -105,6 +105,7 @@ class King : public Piece {
     using Piece::Piece;
     ChessPiece getType() const override { return ChessPiece::king; }
 
+    std::unique_ptr<Move> castleMove(int halfMoveNumber, CastlingType type);
     std::vector<std::unique_ptr<Move>> moves(int halfMove) override;
 };
 

@@ -109,11 +109,11 @@ std::unique_ptr<Move> generateMove(Game& game, std::string move, Color byColor, 
     // FIXME make an effort to see if the move is not ill-formed to start with
 
     // treat castling separately
-    // FIXME
+    auto king = (King*)(game.locatePiece(ChessPiece::king, byColor));
     if (move == "o-o" || move == "O-O" || move == "0-0") {
-        // castle short
+        return king->castleMove(halfMoveNumber, CastlingType::castle_short);
     } else if (move == "o-o-o" || move == "O-O-O" || move == "0-0-0") {
-        // castle long
+        return king->castleMove(halfMoveNumber, CastlingType::castle_long);
     }
 
     static const std::map<char, ChessPiece> pieceForLabel = {

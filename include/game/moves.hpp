@@ -46,9 +46,18 @@ class EnPassantMove : public Move {
     EnPassantDirection direction_;
 };
 
+enum class CastlingType { castle_long, castle_short };
+
 class CastlingMove : public Move {
-    CastlingMove(bool castleShort, Game* game, Board* board, int moveNumber)
-        : Move(game, board, nullptr, nullptr, moveNumber) {}
+  public:
+    CastlingMove(Game* game, Board* board, Piece* piece, Square* target,
+                 int moveNumber, CastlingType type)
+        : Move(game, board, piece, target, moveNumber), type_(type) {}
+
+    void make() override;
+
+  private:
+    CastlingType type_;
 };
 
 } // namespace Skadi

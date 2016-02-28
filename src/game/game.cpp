@@ -42,4 +42,12 @@ CastlingRights& Game::getCastlingRights() { return castlingRights_; }
 void Game::setEnPassentSquare(Square* square) { enPassentSquare = square; }
 void Game::setMove(int move) { move_ = move; };
 
+
+Piece* Game::locatePiece(ChessPiece type, Color color) const {
+    for(auto piece : activePieces) {
+        if (piece->getColor() == color && piece->getType() == type)
+            return piece;
+    }
+    return nullptr;
+}
 } // namespace Skadi

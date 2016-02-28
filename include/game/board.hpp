@@ -26,6 +26,8 @@ class Board {
 
     static constexpr int getSize() { return size_; }
 
+    bool squareUnderAttack(int row, int col, Color forColor) const;
+
   private:
     static constexpr int size_ = 8;
     std::array<std::array<Square, size_>, size_> squares_;
