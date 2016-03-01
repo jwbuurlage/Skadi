@@ -32,6 +32,7 @@ class Piece {
     virtual ChessPiece getType() const;
 
     void capture();
+    void uncapture();
     bool isCaptured() const;
 
     int getLastMoved() const;
@@ -44,6 +45,10 @@ class Piece {
 
     int row_;
     int column_;
+
+    int originalRow_;
+    int originalColumn_;
+
     Color color_;
 
     int lastMoved_ = 0;

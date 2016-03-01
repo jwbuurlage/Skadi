@@ -6,12 +6,14 @@ namespace Skadi {
 
 class Evaluator {
   public:
-    virtual unsigned int evaluate(const Board& board) = 0;
+    Evaluator() = default;
+    virtual int evaluate(const Board& board) { return 1; }
 };
 
 class PointEvaluator : Evaluator {
   public:
-    unsigned int evaluate(const Board& board) override { return 1; }
+    PointEvaluator() = default;
+    int evaluate(const Board& board) override;
 };
 
 } // namespace Skadi

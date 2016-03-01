@@ -13,7 +13,7 @@ class Engine {
     Engine(int depth, Color color);
 
     inline Game& getGame() { return game_; }
- 
+
     inline Board& getBoard() { return game_.getBoard(); }
     inline const Board& getBoard() const { return game_.getBoard(); }
 
@@ -26,8 +26,8 @@ class Engine {
     Color color_;
     Game game_;
 
-    std::unique_ptr<Evaluator> evaluator;
-    std::unique_ptr<Searcher> searcher;
+    std::unique_ptr<PointEvaluator> evaluator_;
+    std::unique_ptr<Searcher> searcher_;
 };
 
 } // namespace Skadi

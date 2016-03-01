@@ -6,7 +6,7 @@
 namespace Skadi {
 
 Move::Move(Game* game, Board* board, Piece* piece, Square* target, int halfMoveNumber)
-    : game_(game), board_(board), piece_(piece), target_(target),
+    : game_(game), board_(board), piece_(piece), target_(target), captured_(nullptr),
       halfMoveNumber_(halfMoveNumber) {}
 
 bool Move::isLegal() const {
@@ -24,12 +24,18 @@ void Move::make() {
         return;
     }
     if (target_->piece != nullptr) {
+        captured_ = target_->piece;
         target_->piece->capture();
         // FIXME: save for unmake
         game_->resetFiftyMoves();
     }
 
+    original_ =
+        game_->getBoard().getSquare(piece_->getRow(), piece_->getColumn());
+
+    oldHalfMoveNumber_ = piece_->getLastMoved();
     piece_->move(target_->row, target_->column, halfMoveNumber_);
+
     if (piece_->getType() == ChessPiece::pawn) {
         // FIXME: save for unmake
         game_->resetFiftyMoves();
@@ -37,7 +43,9 @@ void Move::make() {
 }
 
 void Move::unmake() {
-    // undo everything
+    piece_->move(original_->row, original_->column, oldHalfMoveNumber_);
+    if (captured_ != nullptr)
+        captured_->uncapture();
 }
 
 EnPassantMove::EnPassantMove(Game* game, Board* board, Piece* piece,

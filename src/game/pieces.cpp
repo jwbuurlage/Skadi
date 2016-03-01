@@ -66,9 +66,22 @@ Color Piece::getColor() const { return color_; }
 void Piece::capture() {
     game_->deactivate(this);
     board_->getSquare(row_, column_)->piece = nullptr;
-    row_ = -1;
-    column_ = 1;
     captured_ = true;
+
+    originalRow_ = row_;
+    originalColumn_ = column_;
+
+    row_ = -1;
+    column_ = -1;
+}
+
+void Piece::uncapture() {
+    game_->activate(this);
+    board_->getSquare(originalRow_, originalColumn_)->piece = this;
+    captured_ = false;
+
+    row_ = originalRow_;
+    column_ = originalColumn_;
 }
 
 bool Piece::isCaptured() const { return captured_; }

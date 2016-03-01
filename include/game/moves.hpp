@@ -29,8 +29,11 @@ class Move {
     Board* board_;
     Piece* piece_;
     Square* target_;
+    Square* original_;
+    Piece* captured_;
 
     int halfMoveNumber_;
+    int oldHalfMoveNumber_;
 };
 
 class NullMove : public Move {
