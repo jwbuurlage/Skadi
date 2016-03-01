@@ -10,7 +10,7 @@ class Evaluator {
     virtual int evaluate(const Board& board) { return 1; }
 };
 
-class PointEvaluator : Evaluator {
+class PointEvaluator : public Evaluator {
   public:
     PointEvaluator() = default;
     int evaluate(const Board& board) override;

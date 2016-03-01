@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
     args.addOptionWithDefault("--white",
                               "Human or computer (h/c)", 'h');
     args.addOptionWithDefault("--black",
-                              "Human or computer (h/c)", 'h');
+                              "Human or computer (h/c)", 'c');
     if(!args.parse(argc, argv))
         return -1;
 

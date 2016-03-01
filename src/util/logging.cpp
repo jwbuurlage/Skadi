@@ -42,4 +42,17 @@ jw::Logger& operator<<(jw::Logger& logger, const Piece& piece) {
            << columnNames[piece.getColumn()] << rowNames[piece.getRow()] << ")";
 
         return logger;
-}} // namespace Skadi
+}
+
+jw::Logger& operator<<(jw::Logger& logger, const Move& move) {
+    auto toUpper = [](char c) { return c - 'a' + 'A'; };
+    logger << std::string(1,
+                          toUpper(labelForPiece.at(move.getPiece()->getType())))
+           << columnNames[move.getPiece()->getColumn()]
+           << rowNames[move.getPiece()->getRow()]
+           << columnNames[move.getTarget()->column]
+           << rowNames[move.getTarget()->row];
+
+    return logger;
+}
+} // namespace Skadi

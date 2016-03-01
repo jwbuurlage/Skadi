@@ -17,6 +17,7 @@ bool Move::isLegal() const {
 }
 
 Square* Move::getTarget() const { return target_; }
+Piece* Move::getPiece() const { return piece_; }
 
 void Move::make() {
     if (!isLegal()) {

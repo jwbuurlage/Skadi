@@ -27,7 +27,7 @@ class Engine {
     Game game_;
 
     std::unique_ptr<PointEvaluator> evaluator_;
-    std::unique_ptr<Searcher> searcher_;
+    std::unique_ptr<MinimaxSearcher> searcher_;
 };
 
 } // namespace Skadi

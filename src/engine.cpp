@@ -1,5 +1,6 @@
 #include "engine.hpp"
 #include "evaluator.hpp"
+#include "searcher.hpp"
 
 #include <memory>
 
@@ -10,6 +11,7 @@ Engine::Engine(int depth, Color color) : depth_(depth), color_(color) {
                     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
     evaluator_ = std::make_unique<PointEvaluator>();
+    searcher_ = std::make_unique<MinimaxSearcher>(depth_);
 }
 
 void Engine::forcedMove(Move* move) {
@@ -18,36 +20,9 @@ void Engine::forcedMove(Move* move) {
 }
 
 void Engine::makeMove() {
-    // apply first valid move
-    std::vector<std::unique_ptr<Move>> allMoves;
-
-    for (auto piece : game_.getActivePieces()) {
-        if (piece->getColor() != game_.colorToMove())
-            continue;
-
-        for (auto& move : piece->moves(game_.getHalfMove())) {
-            allMoves.push_back(std::move(move));
-        }
-    }
-
-    Move* bestMove = nullptr;
-    int bestScore = -1000000;
-    for (auto& move : allMoves) {
-        move->make();
-        auto score = evaluator_->evaluate(game_.getBoard());
-        move->unmake();
-
-        if (game_.colorToMove() == Color::black)
-            score *= -1;
-
-        if (score > bestScore) {
-            bestMove = move.get();
-        }
-    }
-
-    JWAssert(bestMove != nullptr);
-
-    bestMove->make();
+    auto move = searcher_->bestMove(evaluator_.get(), &game_);
+    JWLogVar(*move);
+    move->make();
     game_.nextMove();
 }
 

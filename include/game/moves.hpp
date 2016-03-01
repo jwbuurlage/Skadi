@@ -23,6 +23,7 @@ class Move {
     virtual bool isFree() const { return true; }
 
     Square* getTarget() const;
+    Piece* getPiece() const;
 
   protected:
     Game* game_;
