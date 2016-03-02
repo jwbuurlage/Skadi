@@ -4,6 +4,8 @@
 #include "game/board.hpp"
 #include "game/moves.hpp"
 
+#include "util/logging.hpp"
+
 namespace Skadi {
 
 Piece::Piece(PieceObserver* game, Board* board, int row, int col, Color color)
@@ -15,6 +17,8 @@ Piece::Piece(PieceObserver* game, Board* board, int row, int col, Color color)
 void Piece::move(int row, int col, int moveNumber) {
     // remove from current square
     board_->getSquare(row_, column_)->piece = nullptr;
+
+    JWAssert(board_->getSquare(row, col)->piece == nullptr);
 
     // add to new square
     board_->getSquare(row, col)->piece = this;
@@ -158,14 +162,17 @@ std::vector<std::unique_ptr<Move>> Pawn::moves(int halfMoveNumber) {
         } else {
             // can we capture en-passant
             auto leftEnPassant = board_->getSquare(row_, column_ - 1);
-            if (leftEnPassant->piece != nullptr &&
-                leftEnPassant->piece->getType() == ChessPiece::pawn &&
-                leftEnPassant->piece->getLastMoved() == halfMoveNumber - 1 &&
-                ((Pawn*)leftEnPassant->piece)->didMoveDouble()) {
-                moves.push_back(std::make_unique<EnPassantMove>(
-                    (Game*)game_, board_, this, leftSquare, halfMoveNumber,
-                    EnPassantDirection::left));
-            }
+            if (leftEnPassant->piece != nullptr) // &&
+                if (leftEnPassant->piece->getType() == ChessPiece::pawn &&
+                    leftEnPassant->piece->getLastMoved() ==
+                        halfMoveNumber - 1 &&
+                    ((Pawn*)leftEnPassant->piece)->didMoveDouble()) {
+                    JWLogVar(*leftEnPassant->piece);
+                    moves.push_back(std::make_unique<EnPassantMove>(
+                        (Game*)game_, board_, this, leftSquare, halfMoveNumber,
+                        EnPassantDirection::left));
+                    JWLogVar(*moves[moves.size() - 1]);
+                }
         }
     }
 
@@ -193,6 +200,8 @@ std::vector<std::unique_ptr<Move>> Pawn::moves(int halfMoveNumber) {
                 moves.push_back(std::make_unique<EnPassantMove>(
                     (Game*)game_, board_, this, rightSquare, halfMoveNumber,
                     EnPassantDirection::right));
+
+                JWLogVar(*moves[moves.size() - 1]);
             }
         }
 
@@ -228,6 +237,8 @@ std::vector<std::unique_ptr<Move>> Pawn::moves(int halfMoveNumber) {
 void Pawn::move(int row, int col, int moveNumber) {
     if (std::abs(row_ - row) == 2) {
         movedDouble_ = true;
+    } else {
+        movedDouble_ = false;
     }
     Piece::move(row, col, moveNumber);
 }

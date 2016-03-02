@@ -26,7 +26,7 @@ void Move::make() {
     }
     if (target_->piece != nullptr) {
         captured_ = target_->piece;
-        target_->piece->capture();
+        captured_->capture();
         // FIXME: save for unmake
         game_->resetFiftyMoves();
     }
@@ -45,8 +45,10 @@ void Move::make() {
 
 void Move::unmake() {
     piece_->move(original_->row, original_->column, oldHalfMoveNumber_);
-    if (captured_ != nullptr)
+    if (captured_ != nullptr) {
         captured_->uncapture();
+        captured_ = nullptr;
+    }
 }
 
 EnPassantMove::EnPassantMove(Game* game, Board* board, Piece* piece,
